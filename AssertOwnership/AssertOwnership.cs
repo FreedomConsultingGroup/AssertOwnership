@@ -73,13 +73,13 @@ namespace AssertOwnership
         }
 
 
-        public string GetItemInfo(string token, string itemId)
+        public JObject GetItemInfo(string token, string itemId)
         {
             string jsonResponseString = GetRequest(portalUrl + "sharing/content/items/" + itemId,
                                                    new string[] { "token", "f" },
                                                    new string[] { token, "json" });
 
-
+            return JsonConvert.DeserializeObject<JObject>(jsonResponseString);
         }
     }
 }
