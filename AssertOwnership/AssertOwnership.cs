@@ -5,6 +5,8 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+// TODO: comment code on this and PKIAuthentication
+
 
 namespace AssertOwnership
 {
@@ -19,15 +21,10 @@ namespace AssertOwnership
         public void ProcessRequest(HttpContext context)
         {
             string user = context.User.Identity.Name;
-            JObject userInfo = JsonConvert.DeserializeObject<JObject>(GetRequest(portalUrl + "sharing/rest/community/users/" + user,
+            JObject userInfo = JObject.Parse(GetRequest(portalUrl + "sharing/rest/community/users/" + user,
                                                                       new string[] { "f" },
                                                                       new string[] { "json" }));
-            if (userInfo["error"] != null)
-            {
-                context.Response.StatusCode = 403;
-                return;
-            }
-            else if (((string)userInfo["level"]) != "2")
+            if (userInfo["error"] != null || ((string)userInfo["level"]) != "2")
             {
                 context.Response.StatusCode = 403;
                 return;
@@ -44,13 +41,19 @@ namespace AssertOwnership
                 return;
             }
 
-            string token = GenerateToken();
-
-            JObject itemInfo = GetItemInfo(token, itemID);
+            JObject itemInfo = GetItemInfo(itemID);
             if (itemInfo["ownerFolder"] == null)
             {
                 itemInfo["ownerFolder"] = "/";
             }
+
+            if (InvalidGroups(itemInfo, newOwner))
+            {
+                context.Response.StatusCode = 401;
+                return;
+            }
+
+            string token = GenerateToken();
 
             JObject response = JsonConvert.DeserializeObject<JObject>(GetRequest(portalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
                                          new string[] { "targetUsername", "targetFoldername", "token", "f" },
@@ -58,9 +61,51 @@ namespace AssertOwnership
 
             if (response["success"] != null)
             {
+                context.Response.Write("Success");
                 return;
             }
-            // TODO do actual trasfer request here
+            else
+            {
+                context.Response.StatusCode = 500;
+                context.Response.Write((string)response["error"]);
+                return;
+            }
+        }
+
+
+        private bool InvalidGroups(JObject itemInfo, string newOwner)
+        {
+            JToken itemGroupInfo = itemInfo["groups"]["member"];
+            JObject oldUserInfo = GetUserInfo((string)itemInfo["owner"]);
+            JObject newUserInfo = GetUserInfo(newOwner);
+
+            bool matches = false;
+            string matchingGroup = null;
+            foreach (JToken itemGroup in itemGroupInfo)
+            {
+                foreach (JToken oldUserGroup in oldUserInfo["groups"])
+                {
+                    if (oldUserGroup["id"] != null && itemGroup["id"] == oldUserGroup["id"])
+                    {
+                        matchingGroup = (string)itemGroup["id"];
+                        break;
+                    }
+                }
+                if (matches) { break; }
+            }
+
+            if (matchingGroup == null) { return false; }
+
+            foreach (JToken newUserGroup in newUserInfo["groups"])
+            {
+                if ((string)newUserGroup["id"] == matchingGroup)
+                {
+                    matches = true;
+                    break;
+                }
+            }
+
+            return matches;
         }
 
 
@@ -116,13 +161,29 @@ namespace AssertOwnership
         }
 
 
-        public JObject GetItemInfo(string token, string itemId)
+        public JObject GetItemInfo(string itemId)
         {
-            string jsonResponseString = GetRequest(portalUrl + "sharing/content/items/" + itemId,
-                                                   new string[] { "token", "f" },
-                                                   new string[] { token, "json" });
+            string jsonResponseString = GetRequest(portalUrl + "sharing/rest/content/items/" + itemId,
+                                                   new string[] { "f" },
+                                                   new string[] { "json" });
+            string groups = GetRequest(portalUrl + "sharing/rest/content/items/" + itemId + "/groups",
+                                                   new string[] { "f" },
+                                                   new string[] { "json" });
 
-            return JsonConvert.DeserializeObject<JObject>(jsonResponseString);
+            JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
+            jsonObj["groups"] = JsonConvert.DeserializeObject<JObject>(groups);
+            return jsonObj;
+        }
+
+
+        public JObject GetUserInfo(string user)
+        {
+            string jsonResponseString = GetRequest(portalUrl + "sharing/rest/community/users/" + user,
+                                                   new string[] { "f" },
+                                                   new string[] { "json" });
+
+            JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
+            return jsonObj;
         }
     }
 }
