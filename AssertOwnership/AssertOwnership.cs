@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Web;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace AssertOwnership
 {
@@ -18,6 +18,48 @@ namespace AssertOwnership
 
         public void ProcessRequest(HttpContext context)
         {
+            string user = context.User.Identity.Name;
+            JObject userInfo = JsonConvert.DeserializeObject<JObject>(GetRequest(portalUrl + "sharing/rest/community/users/" + user,
+                                                                      new string[] { "f" },
+                                                                      new string[] { "json" }));
+            if (userInfo["error"] != null)
+            {
+                context.Response.StatusCode = 403;
+                return;
+            }
+            else if (((string)userInfo["level"]) != "2")
+            {
+                context.Response.StatusCode = 403;
+                return;
+            }
+
+            HttpRequest request = context.Request;
+            string itemID = request.QueryString["itemid"];
+            string newOwner = request.QueryString["newowner"];
+            string newFolder = request.QueryString["newfolder"];
+
+            if (itemID == null || newOwner == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            string token = GenerateToken();
+
+            JObject itemInfo = GetItemInfo(token, itemID);
+            if (itemInfo["ownerFolder"] == null)
+            {
+                itemInfo["ownerFolder"] = "/";
+            }
+
+            JObject response = JsonConvert.DeserializeObject<JObject>(GetRequest(portalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
+                                         new string[] { "targetUsername", "targetFoldername", "token", "f" },
+                                         new string[] { newOwner, newFolder, token, "json" }));
+
+            if (response["success"] != null)
+            {
+                return;
+            }
             // TODO do actual trasfer request here
         }
 
@@ -42,10 +84,11 @@ namespace AssertOwnership
 
         public string UrlEncodeQuery(string[] keys, string[] values)
         {
-            if(keys.Length != values.Length)
+            if (keys.Length != values.Length)
             {
                 throw new ArgumentException("Length of array \"keys\" must match length of array \"values\".");
-            }else if(keys.Length < 1 || values.Length < 1)
+            }
+            else if (keys.Length < 1 || values.Length < 1)
             {
                 throw new ArgumentException("Arrays must be of at least length 1");
             }
