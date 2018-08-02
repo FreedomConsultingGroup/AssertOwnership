@@ -57,6 +57,7 @@ namespace AssertOwnership
 
         public JObject GetUserContent(string username, string folder)
         {
+            // Get user content for a specified folder
             return helper.StringToJson(helper.GetRequest("sharing/rest/content/users/" + username + "/" + folder,
                                  new string[] { "f" },
                                  new string[] { "json" }));
@@ -64,6 +65,7 @@ namespace AssertOwnership
 
         public JObject GetItems(string username, string folder, bool recursive)
         {
+            // Get information on all items from GetUserContent
             JObject items = new JObject();
             JObject userContent = GetUserContent(username, folder);
 
@@ -72,6 +74,7 @@ namespace AssertOwnership
                 items[item["id"]] = helper.GetItemInfo((string)item["id"]);
             }
 
+            // Set recursive = false if you only want items from the specified folder and nothing else
             if (recursive)
             {
                 foreach (JToken innerFolder in userContent["folders"])
