@@ -12,9 +12,7 @@ namespace AssertOwnership
 {
     public class AssertOwnershipHandler : IHttpHandler
     {
-        /* set the base url for the portal and get path of certificate */
-        private readonly string portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
-        private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT");
+        private OwnershipHelper helper = new OwnershipHelper();
 
         //set the reusable property to true
         public bool IsReusable { get { return true; } }
@@ -25,12 +23,16 @@ namespace AssertOwnership
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
 
+            HttpRequest request = context.Request;
+            if (request.HttpMethod != "POST")
+            {
+                context.Response.StatusCode = 405;
+                return;
+            }
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
             string user = context.User.Identity.Name;
             // Get the info for the user
-            JObject userInfo = JObject.Parse(GetRequest(portalUrl + "sharing/rest/community/users/" + user,
-                                                                      new string[] { "f" },
-                                                                      new string[] { "json" }));
+            JObject userInfo = helper.GetUserInfo(user);
             // If the user doesn't exist, exit with 403 response (Forbidden)
             if (userInfo["error"] != null || ((string)userInfo["level"]) != "2")
             {
@@ -39,10 +41,9 @@ namespace AssertOwnership
             }
 
             // Get item ID, the new owner of the item, and the destination folder from the request parameters
-            HttpRequest request = context.Request;
-            string itemID = request.QueryString["itemid"];
-            string newOwner = request.QueryString["newowner"];
-            string newFolder = request.QueryString["newfolder"];
+            string itemID = request["itemid"];
+            string newOwner = request["newowner"];
+            string newFolder = request["newfolder"];
 
             // If the item ID or new owner aren't specified exit with 400 response (Client Error)
             if (itemID == null || newOwner == null)
@@ -52,7 +53,7 @@ namespace AssertOwnership
             }
 
             // If the destination folder is not specified, default to "/"
-            JObject itemInfo = GetItemInfo(itemID);
+            JObject itemInfo = helper.GetItemInfo(itemID);
             if (itemInfo["ownerFolder"] == null)
             {
                 itemInfo["ownerFolder"] = "/";
@@ -67,9 +68,9 @@ namespace AssertOwnership
             }
 
             // Generate a token to use with API resuests
-            string token = GenerateToken();
+            string token = helper.GenerateToken();
 
-            JObject response = JsonConvert.DeserializeObject<JObject>(GetRequest(portalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
+            JObject response = helper.StringToJson(helper.GetRequest(helper.portalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
                                          new string[] { "targetUsername", "targetFoldername", "token", "f" },
                                          new string[] { newOwner, newFolder, token, "json" }));
 
@@ -92,8 +93,8 @@ namespace AssertOwnership
         {
             /* Checks which group(s) the old owner and the item share, then check to see if the new owner is in those group(s) as well. */
             JToken itemGroupInfo = itemInfo["groups"]["member"];
-            JObject oldUserInfo = GetUserInfo((string)itemInfo["owner"]);
-            JObject newUserInfo = GetUserInfo(newOwner);
+            JObject oldUserInfo = helper.GetUserInfo((string)itemInfo["owner"]);
+            JObject newUserInfo = helper.GetUserInfo(newOwner);
 
             bool matches = false;
             string[] matchingGroup = { };
@@ -124,6 +125,16 @@ namespace AssertOwnership
 
             return matches;
         }
+    }
+
+
+    public class OwnershipHelper
+    {
+        /* Contains helper functions that prevent writing the same code over and over. */
+
+        /* Set the base url for the portal and get path of certificate */
+        public readonly string portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
+        private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT");
 
 
         public string GetRequest(string url, string[] keys, string[] values)
@@ -141,7 +152,20 @@ namespace AssertOwnership
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             Stream stream = response.GetResponseStream();
             StreamReader reader = new StreamReader(stream);
+
             return reader.ReadToEnd();
+        }
+
+
+        public JObject StringToJson(string json)
+        {
+            return JsonConvert.DeserializeObject<JObject>(json);
+        }
+
+
+        public string JsonToString(JObject json)
+        {
+            return JsonConvert.SerializeObject(json);
         }
 
 
