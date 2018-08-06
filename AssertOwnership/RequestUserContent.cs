@@ -8,7 +8,6 @@ namespace AssertOwnership
     {
 
         /* Set the base url for the portal and get path of certificate */
-        private readonly string portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
         private OwnershipHelper helper = new OwnershipHelper();
 
         public bool IsReusable { get { return true; } }
