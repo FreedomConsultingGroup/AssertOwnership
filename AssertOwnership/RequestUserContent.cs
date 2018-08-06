@@ -45,6 +45,7 @@ namespace AssertOwnership
             }
 
             JObject items = GetItems(username, folder, true);
+            context.Response.ContentType = "application/json";
             context.Response.Write(helper.JsonToString(items));
         }
 
