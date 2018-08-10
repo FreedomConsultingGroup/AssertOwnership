@@ -36,12 +36,11 @@ namespace AssertOwnership
             if (username == null)
             {
                 username = user;
-                return;
             }
             // If a folder is not specified, default to the root folder
             if (folder == null)
             {
-                folder = "/";
+                folder = "";
             }
 
             JObject items = GetItems(username, folder, true);
@@ -49,30 +48,23 @@ namespace AssertOwnership
             context.Response.Write(helper.JsonToString(items));
         }
 
-        public JObject GetUserContent(string username, string folder)
-        {
-            // Get user content for a specified folder
-            return helper.StringToJson(helper.GetRequest("sharing/rest/content/users/" + username + "/" + folder,
-                                 new string[] { "f" },
-                                 new string[] { "json" }));
-        }
 
         public JObject GetItems(string username, string folder, bool recursive)
         {
             // Get information on all items from GetUserContent
             JObject items = new JObject();
-            JObject userContent = GetUserContent(username, folder);
+            JObject userContent = helper.GetUserContent(username, folder);
 
             foreach (JToken item in userContent["items"])
             {
-                items[item["id"]] = helper.GetItemInfo((string)item["id"]);
+                items[(string)item["id"]] = helper.GetItemInfo((string)item["id"]);
             }
 
             // Set recursive = false if you only want items from the specified folder and nothing else
-            if (recursive)
+            if (recursive && userContent.ContainsKey("folders"))
             {
                 foreach (JToken innerFolder in userContent["folders"])
-                    items.AddAfterSelf(GetItems(username, (string)innerFolder, true));
+                    items[(string)innerFolder["id"]] = GetItems(username, (string)innerFolder["id"], true);
             }
 
             return items;

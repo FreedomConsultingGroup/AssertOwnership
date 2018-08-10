@@ -53,10 +53,15 @@ namespace AssertOwnership
             }
 
             // If the destination folder is not specified, default to "/"
+            if (newFolder == null)
+            {
+                newFolder = "";
+            }
+
             JObject itemInfo = helper.GetItemInfo(itemID);
             if (itemInfo["ownerFolder"] == null)
             {
-                itemInfo["ownerFolder"] = "/";
+                itemInfo["ownerFolder"] = "";
             }
 
             /* Check to see if the item, the current owner, and the new owner all share a group.
@@ -134,13 +139,17 @@ namespace AssertOwnership
 
         /* Set the base url for the portal and get path of certificate */
         public readonly string portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
-        private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT");
+        private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT_PATH", EnvironmentVariableTarget.Machine);
         private X509Certificate2Collection collection;
 
         public OwnershipHelper()
         {
-            X509Certificate2 cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.MachineKeySet);
-            collection = new X509Certificate2Collection(cert);
+            //X509Certificate2 cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
+            byte[] certFileBinary = File.ReadAllBytes(certPath + "cgoodTEMP.pfx");
+            string passwd = File.ReadAllText(certPath + "passwd.txt");
+            X509Certificate2 cert = new X509Certificate2();
+            cert.Import(certFileBinary, passwd, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+            this.collection = new X509Certificate2Collection(cert);
         }
 
 
@@ -150,7 +159,7 @@ namespace AssertOwnership
             string parameters = UrlEncodeQuery(keys, values);
             HttpWebRequest request = (HttpWebRequest)WebRequest.CreateHttp(url + "?" + parameters);
 
-            request.ClientCertificates = collection;
+            request.ClientCertificates = this.collection;
 
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
@@ -235,6 +244,15 @@ namespace AssertOwnership
 
             JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
             return jsonObj;
+        }
+
+
+        public JObject GetUserContent(string username, string folderId)
+        {
+            // Get user content for a specified folder
+            return StringToJson(GetRequest(portalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
+                                 new string[] { "f" },
+                                 new string[] { "json" }));
         }
     }
 }
