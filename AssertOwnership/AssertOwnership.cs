@@ -135,6 +135,13 @@ namespace AssertOwnership
         /* Set the base url for the portal and get path of certificate */
         public readonly string portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
         private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT");
+        private X509Certificate2Collection collection;
+
+        public OwnershipHelper()
+        {
+            X509Certificate2 cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.MachineKeySet);
+            collection = new X509Certificate2Collection(cert);
+        }
 
 
         public string GetRequest(string url, string[] keys, string[] values)
@@ -143,8 +150,6 @@ namespace AssertOwnership
             string parameters = UrlEncodeQuery(keys, values);
             HttpWebRequest request = (HttpWebRequest)WebRequest.CreateHttp(url + "?" + parameters);
 
-            X509Certificate2Collection collection = new X509Certificate2Collection();
-            collection.Import(certPath, "", X509KeyStorageFlags.PersistKeySet);
             request.ClientCertificates = collection;
 
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
