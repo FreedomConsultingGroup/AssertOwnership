@@ -22,7 +22,7 @@ namespace AssertOwnership
         {
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
-
+            
             HttpRequest request = context.Request;
             if (request.HttpMethod != "POST")
             {
@@ -144,7 +144,6 @@ namespace AssertOwnership
 
         public OwnershipHelper()
         {
-            //X509Certificate2 cert = new X509Certificate2(certPath, "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
             byte[] certFileBinary = File.ReadAllBytes(certPath + "cgoodTEMP.pfx");
             string passwd = File.ReadAllText(certPath + "passwd.txt");
             X509Certificate2 cert = new X509Certificate2();
@@ -253,6 +252,14 @@ namespace AssertOwnership
             return StringToJson(GetRequest(portalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
                                  new string[] { "f" },
                                  new string[] { "json" }));
+        }
+
+
+        public JObject GetGroupContent(string groupId)
+        {
+            return StringToJson(GetRequest(portalUrl + "sharing/rest/content/groups/" + groupId,
+                                new string[] { "f" },
+                                new string[] { "json" }));
         }
     }
 }

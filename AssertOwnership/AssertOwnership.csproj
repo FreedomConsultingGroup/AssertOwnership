@@ -73,12 +73,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertOwnership.cs" />
+    <Compile Include="RequestGroupContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestUserContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />
     <None Include="packages.config" />
+    <Content Include="interactive.html" />
     <Content Include="PKIAuthenticationModule.key.snk" />
   </ItemGroup>
   <PropertyGroup>
