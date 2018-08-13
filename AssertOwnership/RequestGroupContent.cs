@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AssertOwnership
 {
-    public class RequestGroupContent : IHttpHandler
+    public class RequestGroupContentHandler : IHttpHandler
     {
         private OwnershipHelper helper = new OwnershipHelper();
 
@@ -26,6 +26,11 @@ namespace AssertOwnership
             }
 
             JObject items = GetGroupItems(userInfo);
+            if (items == null)
+            {
+                context.Response.StatusCode = 400;
+                return;
+            }
             context.Response.ContentType = "application/json";
             context.Response.Write(helper.JsonToString(items));
         }
@@ -35,6 +40,11 @@ namespace AssertOwnership
         {
             // Get information on all items in the user's groups
             JObject items = new JObject();
+
+            if (userInfo["groups"] == null)
+            {
+                return null;
+            }
 
             // for each group, add all items in that group to a list
             foreach (JToken group in userInfo["groups"])
