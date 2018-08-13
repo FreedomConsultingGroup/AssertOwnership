@@ -36,10 +36,18 @@ namespace AssertOwnership
             // Get information on all items in the user's groups
             JObject items = new JObject();
 
-            foreach(JToken group in userInfo["groups"])
+            // for each group, add all items in that group to a list
+            foreach (JToken group in userInfo["groups"])
             {
                 JObject groupContent = helper.GetGroupContent((string)group["id"]);
 
+                foreach (JToken item in groupContent["items"])
+                {
+                    if (!items.ContainsKey((string)item["id"]))
+                    {
+                        items[(string)item["id"]] = item;
+                    }
+                }
             }
 
             return items;
