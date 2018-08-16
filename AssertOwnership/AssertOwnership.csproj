@@ -72,10 +72,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssertOwnership.cs" />
-    <Compile Include="RequestGroupContent.cs" />
+    <Compile Include="CS\AssertOwnership.cs" />
+    <Compile Include="CS\OwnershipHelper.cs" />
+    <Compile Include="CS\RequestGroupContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestUserContent.cs" />
+    <Compile Include="CS\RequestUserContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />
