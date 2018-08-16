@@ -5,19 +5,12 @@ using Newtonsoft.Json.Linq;
 
 namespace AssertOwnership
 {
-    public class AssertOwnershipHandler2 : IHttpHandler
+    public class AssertOwnership
     {
         private OwnershipHelper helper = new OwnershipHelper();
 
-        //set the reusable property to true
-        public bool IsReusable { get { return true; } }
-
-
         public void ProcessRequest(HttpContext context)
         {
-            /* ProcessRequest is automatically called by IIS when it receives a
-               request to the url pointed to by web.config */
-            
             HttpRequest request = context.Request;
             if (request.HttpMethod != "POST")
             {

@@ -4,18 +4,13 @@ using Newtonsoft.Json.Linq;
 
 namespace AssertOwnership
 {
-    public class RequestUserContentHandler : IHttpHandler
+    public class RequestUserContent
     {
-
         /* Set the base url for the portal and get path of certificate */
         private OwnershipHelper helper = new OwnershipHelper();
 
-        public bool IsReusable { get { return true; } }
-
         public void ProcessRequest(HttpContext context)
         {
-            /* ProcessRequest is automatically called by IIS when it receives a
-               request to the url pointed to by web.config */
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
             string user = context.User.Identity.Name;
