@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="Code\AssertOwnership.cs" />
     <Compile Include="Code\AssertOwnershipHandler.cs" />
-    <Compile Include="Code\HttpExceptionFactory.cs" />
+    <Compile Include="Code\HttpException.cs" />
     <Compile Include="Code\OwnershipHelper.cs" />
     <Compile Include="Code\RequestGroupContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
