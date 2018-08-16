@@ -5,9 +5,9 @@ namespace AssertOwnership
 {
     public class RequestGroupContent
     {
-        private OwnershipHelper helper = new OwnershipHelper();
+        private static OwnershipHelper helper = new OwnershipHelper();
         
-        public void ProcessRequest(HttpContext context)
+        public static void ProcessRequest(HttpContext context)
         {
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
@@ -32,7 +32,7 @@ namespace AssertOwnership
         }
 
 
-        public JObject GetGroupItems(JObject userInfo)
+        public static JObject GetGroupItems(JObject userInfo)
         {
             // Get information on all items in the user's groups
             JObject items = new JObject();

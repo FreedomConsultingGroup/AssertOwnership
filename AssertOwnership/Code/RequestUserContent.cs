@@ -7,9 +7,9 @@ namespace AssertOwnership
     public class RequestUserContent
     {
         /* Set the base url for the portal and get path of certificate */
-        private OwnershipHelper helper = new OwnershipHelper();
+        private static OwnershipHelper helper = new OwnershipHelper();
 
-        public void ProcessRequest(HttpContext context)
+        public static void ProcessRequest(HttpContext context)
         {
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
@@ -44,7 +44,7 @@ namespace AssertOwnership
         }
 
 
-        public JObject GetItems(string username, string folder, bool recursive)
+        public static JObject GetItems(string username, string folder, bool recursive)
         {
             // Get information on all items from GetUserContent
             JObject items = new JObject();

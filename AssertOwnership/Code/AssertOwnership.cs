@@ -7,9 +7,9 @@ namespace AssertOwnership
 {
     public class AssertOwnership
     {
-        private OwnershipHelper helper = new OwnershipHelper();
+        private static OwnershipHelper helper = new OwnershipHelper();
 
-        public void ProcessRequest(HttpContext context)
+        public static void ProcessRequest(HttpContext context)
         {
             HttpRequest request = context.Request;
             if (request.HttpMethod != "POST")
@@ -82,7 +82,7 @@ namespace AssertOwnership
         }
 
 
-        private bool InvalidGroups(JObject itemInfo, string newOwner)
+        private static bool InvalidGroups(JObject itemInfo, string newOwner)
         {
             /* Checks which group(s) the old owner and the item share, then check to see if the new owner is in those group(s) as well. */
             JToken itemGroupInfo = itemInfo["groups"]["member"];
