@@ -3,8 +3,10 @@ using System.Web;
 
 namespace FCG.AssertOwnership
 {
-    public class AssertOwnershipHandler : IHttpHandler
+    public class AssertOwnershipController : IHttpHandler
     {
+        // Base controller, called by IIS
+
         public bool IsReusable { get { return true; } }
 
 
@@ -12,9 +14,9 @@ namespace FCG.AssertOwnership
         {
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
-            
-            string[] path = null;
 
+            string[] path = null;
+            int index = 0;
             Match match = Regex.Match(context.Request.Path, @"(?:ownership)((?:\/[^\/]+)+)", RegexOptions.IgnoreCase);
             if (match.Success && match.Groups.Count > 1)
             {
@@ -25,24 +27,22 @@ namespace FCG.AssertOwnership
                 // Throw 404 exception
             }
 
-            IHttpHandler handler;
-            switch (path[0])
+            AOController controller;
+            if (path[index] == RestContentController.Path)
             {
-                case ChangeOwnerHandler.Path:
-                    handler = new ChangeOwnerHandler();
-                    handler.ProcessRequest(context);
-                    return;
-                case RequestUserContentHandler.Path:
-                    handler = new RequestUserContentHandler();
-                    handler.ProcessRequest(context);
-                    return;
-                case RequestGroupContentHandler.Path:
-                    handler = new RequestGroupContentHandler();
-                    handler.ProcessRequest(context);
-                    return;
-                default:
-                    // Throw 404 Exception
-                    break;
+                controller = new RestContentController();
+                controller.Defer(context, path, ++index);
+                return;
+            }
+            else if (path[index] == StaticContentController.Path)
+            {
+                controller = new StaticContentController();
+                controller.Defer(context, path, ++index);
+                return;
+            }
+            else
+            {
+                // Throw 404 Exception
             }
         }
     }

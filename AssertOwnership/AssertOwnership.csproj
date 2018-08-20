@@ -72,13 +72,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\ChangeOwnerHandler.cs" />
+    <Compile Include="Code\AOController.cs" />
+    <Compile Include="Code\AOHttpHandler.cs" />
+    <Compile Include="Code\Rest\ChangeOwnerHandler.cs" />
     <Compile Include="Code\AssertOwnershipHandler.cs" />
+    <Compile Include="Code\Rest\RestContentController.cs" />
+    <Compile Include="Code\Static\StaticContentController.cs" />
     <Compile Include="Code\HttpException.cs" />
-    <Compile Include="Code\OwnershipHelper.cs" />
-    <Compile Include="Code\RequestGroupContentHandler.cs" />
+    <Compile Include="Code\Rest\OwnershipHelper.cs" />
+    <Compile Include="Code\Rest\RequestGroupContentHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Code\RequestUserContentHandler.cs" />
+    <Compile Include="Code\Rest\RequestUserContentHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />

@@ -5,11 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class ChangeOwnerHandler : IHttpHandler
+    public class ChangeOwnerHandler : AOHttpHandler
     {
-        public const string Path = "assert";
-
-        public bool IsReusable { get { return true; } }
+        public static string Path { get { return "assert"; } }
 
         private OwnershipHelper helper = new OwnershipHelper();
 

@@ -4,11 +4,9 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class RequestGroupContentHandler : IHttpHandler
+    public class RequestGroupContentHandler : AOHttpHandler
     {
-        public const string Path = "group";
-
-        public bool IsReusable { get { return true; } }
+        public static string Path { get { return "group"; } }
 
         private OwnershipHelper helper = new OwnershipHelper();
         
