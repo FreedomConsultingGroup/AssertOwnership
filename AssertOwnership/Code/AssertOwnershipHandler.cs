@@ -12,7 +12,7 @@ namespace FCG.AssertOwnership
         {
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
-
+            
             string[] path = null;
 
             Match match = Regex.Match(context.Request.Path, @"(?:ownership)((?:\/[^\/]+)+)", RegexOptions.IgnoreCase);
@@ -25,27 +25,24 @@ namespace FCG.AssertOwnership
                 // Throw 404 exception
             }
 
-            if (path[0] == "assert")
+            IHttpHandler handler;
+            switch (path[0])
             {
-                IHttpHandler handler = new ChangeOwnerHandler();
-                handler.ProcessRequest(context);
-                return;
-            }
-            else if (path[0] == "user")
-            {
-                IHttpHandler handler = new RequestUserContentHandler();
-                handler.ProcessRequest(context);
-                return;
-            }
-            else if (path[0] == "group")
-            {
-                IHttpHandler handler = new RequestGroupContentHandler();
-                handler.ProcessRequest(context);
-                return;
-            }
-            else
-            {
-                // Throw 404 Exception
+                case ChangeOwnerHandler.Path:
+                    handler = new ChangeOwnerHandler();
+                    handler.ProcessRequest(context);
+                    return;
+                case RequestUserContentHandler.Path:
+                    handler = new RequestUserContentHandler();
+                    handler.ProcessRequest(context);
+                    return;
+                case RequestGroupContentHandler.Path:
+                    handler = new RequestGroupContentHandler();
+                    handler.ProcessRequest(context);
+                    return;
+                default:
+                    // Throw 404 Exception
+                    break;
             }
         }
     }

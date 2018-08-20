@@ -1,10 +1,13 @@
 ﻿using System.Web;
 using Newtonsoft.Json.Linq;
 
+
 namespace FCG.AssertOwnership
 {
     public class RequestGroupContentHandler : IHttpHandler
     {
+        public const string Path = "group";
+
         public bool IsReusable { get { return true; } }
 
         private OwnershipHelper helper = new OwnershipHelper();

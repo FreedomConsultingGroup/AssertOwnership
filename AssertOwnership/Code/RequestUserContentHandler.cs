@@ -6,6 +6,7 @@ namespace FCG.AssertOwnership
 {
     public class RequestUserContentHandler : IHttpHandler
     {
+        public const string Path = "user";
 
         public bool IsReusable { get { return true; } }
 

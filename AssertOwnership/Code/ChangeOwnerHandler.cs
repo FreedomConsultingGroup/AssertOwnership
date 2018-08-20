@@ -7,6 +7,8 @@ namespace FCG.AssertOwnership
 {
     public class ChangeOwnerHandler : IHttpHandler
     {
+        public const string Path = "assert";
+
         public bool IsReusable { get { return true; } }
 
         private OwnershipHelper helper = new OwnershipHelper();
