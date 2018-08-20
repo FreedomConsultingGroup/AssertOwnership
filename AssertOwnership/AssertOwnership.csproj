@@ -72,13 +72,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\AssertOwnership.cs" />
+    <Compile Include="Code\ChangeOwnerHandler.cs" />
     <Compile Include="Code\AssertOwnershipHandler.cs" />
     <Compile Include="Code\HttpException.cs" />
     <Compile Include="Code\OwnershipHelper.cs" />
-    <Compile Include="Code\RequestGroupContent.cs" />
+    <Compile Include="Code\RequestGroupContentHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Code\RequestUserContent.cs" />
+    <Compile Include="Code\RequestUserContentHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />

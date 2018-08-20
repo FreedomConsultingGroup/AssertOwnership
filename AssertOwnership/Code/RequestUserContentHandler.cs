@@ -2,14 +2,16 @@
 using Newtonsoft.Json.Linq;
 
 
-namespace AssertOwnership
+namespace FCG.AssertOwnership
 {
-    public class RequestUserContent
+    public class RequestUserContentHandler : IHttpHandler
     {
-        /* Set the base url for the portal and get path of certificate */
-        private static OwnershipHelper helper = new OwnershipHelper();
 
-        public static void ProcessRequest(HttpContext context)
+        public bool IsReusable { get { return true; } }
+
+        private OwnershipHelper helper = new OwnershipHelper();
+
+        public void ProcessRequest(HttpContext context)
         {
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
@@ -44,7 +46,7 @@ namespace AssertOwnership
         }
 
 
-        public static JObject GetItems(string username, string folder, bool recursive)
+        public JObject GetItems(string username, string folder, bool recursive)
         {
             // Get information on all items from GetUserContent
             JObject items = new JObject();

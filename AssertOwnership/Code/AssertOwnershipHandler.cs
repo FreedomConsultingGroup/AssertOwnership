@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 
-namespace AssertOwnership.Code
+namespace FCG.AssertOwnership
 {
     public class AssertOwnershipHandler : IHttpHandler
     {
@@ -27,17 +27,20 @@ namespace AssertOwnership.Code
 
             if (path[0] == "assert")
             {
-                AssertOwnership.ProcessRequest(context);
+                IHttpHandler handler = new ChangeOwnerHandler();
+                handler.ProcessRequest(context);
                 return;
             }
             else if (path[0] == "user")
             {
-                RequestUserContent.ProcessRequest(context);
+                IHttpHandler handler = new RequestUserContentHandler();
+                handler.ProcessRequest(context);
                 return;
             }
             else if (path[0] == "group")
             {
-                RequestGroupContent.ProcessRequest(context);
+                IHttpHandler handler = new RequestGroupContentHandler();
+                handler.ProcessRequest(context);
                 return;
             }
             else

@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AssertOwnership
+namespace FCG.AssertOwnership
 {
     public class OwnershipHelper
     {

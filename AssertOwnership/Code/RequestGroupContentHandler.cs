@@ -1,13 +1,15 @@
 ﻿using System.Web;
 using Newtonsoft.Json.Linq;
 
-namespace AssertOwnership
+namespace FCG.AssertOwnership
 {
-    public class RequestGroupContent
+    public class RequestGroupContentHandler : IHttpHandler
     {
-        private static OwnershipHelper helper = new OwnershipHelper();
+        public bool IsReusable { get { return true; } }
+
+        private OwnershipHelper helper = new OwnershipHelper();
         
-        public static void ProcessRequest(HttpContext context)
+        public void ProcessRequest(HttpContext context)
         {
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
@@ -32,7 +34,7 @@ namespace AssertOwnership
         }
 
 
-        public static JObject GetGroupItems(JObject userInfo)
+        public JObject GetGroupItems(JObject userInfo)
         {
             // Get information on all items in the user's groups
             JObject items = new JObject();
