@@ -1,16 +1,13 @@
 ﻿using System;
+using System.Web;
 
 namespace FCG.AssertOwnership
 {
-    public class HttpException : Exception
+    public class HttpException
     {
-        private int statusCode;
-
-        public HttpException(string message, int statusCode) : base(message)
+        public static void SendHttpException(HttpContext context, string message, int statusCode)
         {
-            this.statusCode = statusCode;
+            context.Response.StatusCode = statusCode;
         }
-
-        public int StatusCode { get { return this.statusCode; } }
     }
 }

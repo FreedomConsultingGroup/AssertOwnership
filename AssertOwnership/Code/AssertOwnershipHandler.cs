@@ -24,7 +24,8 @@ namespace FCG.AssertOwnership
             }
             else
             {
-                // Throw 404 exception
+                context.Response.StatusCode = 404;
+                return;
             }
 
             AOController controller;
@@ -42,7 +43,8 @@ namespace FCG.AssertOwnership
             }
             else
             {
-                // Throw 404 Exception
+                context.Response.StatusCode = 404;
+                return;
             }
         }
     }

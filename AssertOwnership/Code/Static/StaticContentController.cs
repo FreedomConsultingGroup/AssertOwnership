@@ -13,15 +13,6 @@ namespace FCG.AssertOwnership
         {
             string filePath = Config.StaticDirectory;
 
-            if (path[index] == "js")
-            {
-                filePath += @"\js";
-            }
-            else if (path[index] == "css")
-            {
-                filePath += @"\css";
-            }
-
             for (int i = index; i < path.Length; i++)
             {
                 filePath += @"\" + path[i];
@@ -30,6 +21,8 @@ namespace FCG.AssertOwnership
             if (!IsValid(filePath))
             {
                 // Throw 403 Exception
+                context.Response.StatusCode = 403;
+                return;
             }
 
             try
@@ -40,10 +33,14 @@ namespace FCG.AssertOwnership
             catch (FileNotFoundException e)
             {
                 // Throw 404 exception
+                context.Response.StatusCode = 404;
+                return;
             }
             catch (DirectoryNotFoundException e)
             {
                 // Throw 404 exception
+                context.Response.StatusCode = 404;
+                return;
             }
         }
 

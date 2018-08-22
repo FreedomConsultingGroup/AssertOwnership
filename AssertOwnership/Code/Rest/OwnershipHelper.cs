@@ -59,15 +59,6 @@ namespace FCG.AssertOwnership
         public string UrlEncodeQuery(string[] keys, string[] values)
         {
             // Encode the keys and values into URL compliant get parameters
-            if (keys.Length != values.Length)
-            {
-                throw new ArgumentException("Length of array \"keys\" must match length of array \"values\".");
-            }
-            else if (keys.Length < 1 || values.Length < 1)
-            {
-                throw new ArgumentException("Arrays must be of at least length 1");
-            }
-
             string parameters = "";
             parameters += HttpUtility.UrlEncode(keys[0]) + "=" + HttpUtility.UrlEncode(values[0]);
             for (int i = 1; i < keys.Length; i++)

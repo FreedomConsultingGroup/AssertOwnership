@@ -78,7 +78,6 @@ namespace FCG.AssertOwnership
             else
             {
                 context.Response.StatusCode = 500;
-                context.Response.Write((string)response["error"]);
                 return;
             }
         }
