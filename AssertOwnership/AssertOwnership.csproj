@@ -79,7 +79,6 @@
     <Compile Include="Code\AssertOwnershipHandler.cs" />
     <Compile Include="Code\Rest\RestContentController.cs" />
     <Compile Include="Code\Static\StaticContentController.cs" />
-    <Compile Include="Code\HttpException.cs" />
     <Compile Include="Code\Rest\OwnershipHelper.cs" />
     <Compile Include="Code\Rest\RequestGroupContentHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
