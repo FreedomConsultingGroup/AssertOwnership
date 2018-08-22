@@ -11,7 +11,7 @@ namespace FCG.AssertOwnership
 
         public void Defer(HttpContext context, string[] path, int index)
         {
-            string filePath = @"C:\inetpub\wwwroot\portal\ownership\static";
+            string filePath = Config.StaticDirectory;
 
             if (path[index] == "js")
             {
@@ -27,7 +27,7 @@ namespace FCG.AssertOwnership
                 filePath += @"\" + part;
             }
 
-            if (!HasValidExtension(filePath))
+            if (!IsValid(filePath))
             {
                 // Throw 403 Exception
             }
@@ -42,8 +42,13 @@ namespace FCG.AssertOwnership
             }
         }
 
-        private bool HasValidExtension(string filePath)
+        private bool IsValid(string filePath)
         {
+            FileInfo file = new FileInfo(filePath);
+            if (!file.FullName.StartsWith(Config.StaticDirectory))
+            {
+                return false;
+            }
             string[] acceptedExtensions = { ".html", ".css", ".js" };
             foreach(string extension in acceptedExtensions)
             {

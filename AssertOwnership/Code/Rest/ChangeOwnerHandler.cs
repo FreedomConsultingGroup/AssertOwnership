@@ -65,7 +65,7 @@ namespace FCG.AssertOwnership
             // Generate a token to use with API resuests
             string token = helper.GenerateToken();
 
-            JObject response = helper.StringToJson(helper.GetRequest(helper.portalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
+            JObject response = helper.StringToJson(helper.GetRequest(Config.PortalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
                                          new string[] { "targetUsername", "targetFoldername", "token", "f" },
                                          new string[] { newOwner, newFolder, token, "json" }));
 

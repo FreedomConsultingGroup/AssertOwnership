@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Code\AOController.cs" />
     <Compile Include="Code\AOHttpHandler.cs" />
+    <Compile Include="Code\Config.cs" />
     <Compile Include="Code\Rest\ChangeOwnerHandler.cs" />
     <Compile Include="Code\AssertOwnershipHandler.cs" />
     <Compile Include="Code\Rest\RestContentController.cs" />
