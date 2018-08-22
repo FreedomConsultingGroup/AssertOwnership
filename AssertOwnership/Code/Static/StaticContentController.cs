@@ -45,7 +45,7 @@ namespace FCG.AssertOwnership
         private bool IsValid(string filePath)
         {
             FileInfo file = new FileInfo(filePath);
-            if (!file.FullName.StartsWith(Config.StaticDirectory))
+            if (!file.FullName.ToLower().StartsWith(Config.StaticDirectory.ToLower()))
             {
                 return false;
             }
