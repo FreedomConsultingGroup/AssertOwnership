@@ -7,7 +7,7 @@ namespace FCG.AssertOwnership
 {
     public class Config
     {
-        public static string BaseDirectory { get { return @"C:\inetpub\wwwroot\portal\ownership"; } }
+        public static string BaseDirectory { get { return @"C:\inetpub\wwwroot\portal\Ownership"; } }
 
         public static string StaticDirectory { get { return BaseDirectory + @"\static"; } }
 

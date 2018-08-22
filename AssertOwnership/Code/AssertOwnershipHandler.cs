@@ -17,7 +17,7 @@ namespace FCG.AssertOwnership
 
             string[] path = null;
             int index = 0;
-            Match match = Regex.Match(context.Request.Path, @"(?:ownership)((?:\/[^\/]+)+)(?:\/*\?)", RegexOptions.IgnoreCase);
+            Match match = Regex.Match(context.Request.Path, @"(?:ownership)((?:\/[^\/?]+)+)(?:\/*\?*)", RegexOptions.IgnoreCase);
             if (match.Success && match.Groups.Count > 1)
             {
                 path = match.Groups[1].Value.Split(new char[] { '/' }, System.StringSplitOptions.RemoveEmptyEntries);

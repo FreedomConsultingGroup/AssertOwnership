@@ -22,9 +22,9 @@ namespace FCG.AssertOwnership
                 filePath += @"\css";
             }
 
-            foreach(string part in path)
+            for (int i = index; i < path.Length; i++)
             {
-                filePath += @"\" + part;
+                filePath += @"\" + path[i];
             }
 
             if (!IsValid(filePath))
@@ -35,8 +35,13 @@ namespace FCG.AssertOwnership
             try
             {
                 context.Response.Write(File.ReadAllText(filePath));
+                return;
             }
-            catch(FileNotFoundException e)
+            catch (FileNotFoundException e)
+            {
+                // Throw 404 exception
+            }
+            catch (DirectoryNotFoundException e)
             {
                 // Throw 404 exception
             }
@@ -50,7 +55,7 @@ namespace FCG.AssertOwnership
                 return false;
             }
             string[] acceptedExtensions = { ".html", ".css", ".js" };
-            foreach(string extension in acceptedExtensions)
+            foreach (string extension in acceptedExtensions)
             {
                 if (filePath.EndsWith(extension))
                 {
