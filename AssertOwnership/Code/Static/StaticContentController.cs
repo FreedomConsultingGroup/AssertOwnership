@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using System.IO;
 
 namespace FCG.AssertOwnership
 {
@@ -10,18 +11,48 @@ namespace FCG.AssertOwnership
 
         public void Defer(HttpContext context, string[] path, int index)
         {
-            string filePath = @"C:\inetpub\wwwroot\portal\ownership\static\";
+            string filePath = @"C:\inetpub\wwwroot\portal\ownership\static";
 
             if (path[index] == "js")
             {
-                filePath += "js";
+                filePath += @"\js";
             }
             else if (path[index] == "css")
             {
-                filePath += "css";
+                filePath += @"\css";
             }
-            
 
+            foreach(string part in path)
+            {
+                filePath += @"\" + part;
+            }
+
+            if (!HasValidExtension(filePath))
+            {
+                // Throw 403 Exception
+            }
+
+            try
+            {
+                context.Response.Write(File.ReadAllText(filePath));
+            }
+            catch(FileNotFoundException e)
+            {
+                // Throw 404 exception
+            }
+        }
+
+        private bool HasValidExtension(string filePath)
+        {
+            string[] acceptedExtensions = { ".html", ".css", ".js" };
+            foreach(string extension in acceptedExtensions)
+            {
+                if (filePath.EndsWith(extension))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
