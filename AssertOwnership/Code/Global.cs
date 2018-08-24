@@ -7,10 +7,11 @@ namespace FCG.AssertOwnership
 {
     public class Global
     {
-        public static string BaseDirectory { get { return @"C:\inetpub\wwwroot\portal\Ownership"; } }
+        // Global variables used by different files, as well as things that may need to be changed by other users
+        public const string BaseDirectory = @"C:\inetpub\wwwroot\portal\Ownership";
 
-        public static string StaticDirectory { get { return BaseDirectory + @"\static"; } }
+        public const string StaticDirectory = BaseDirectory + @"\static";
 
-        public static string PortalUrl { get { return @"https://fcg-arcgis-srv.freedom.local/portal/"; } }
+        public const string PortalUrl = @"https://fcg-arcgis-srv.freedom.local/portal/";
     }
 }

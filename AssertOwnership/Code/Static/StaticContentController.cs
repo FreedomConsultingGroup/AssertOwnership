@@ -11,6 +11,9 @@ namespace FCG.AssertOwnership
 
         public void Defer(HttpContext context, string[] path, int index)
         {
+            /* Called by AssertOwnershipController, points to the handlers for the static
+               based on the path of the request*/
+            
             string filePath = Global.StaticDirectory;
 
             for (int i = index; i < path.Length; i++)
@@ -18,25 +21,20 @@ namespace FCG.AssertOwnership
                 filePath += @"\" + path[i];
             }
 
-            if (!IsValid(filePath))
+            if (IsInvalid(filePath))
             {
-                // Throw 403 Exception
+                // Throw 404 Exception
                 context.Response.StatusCode = 404;
                 return;
             }
 
             try
             {
+                // try to find the file, return 404 if not found
                 context.Response.Write(File.ReadAllText(filePath));
                 return;
             }
-            catch (FileNotFoundException e)
-            {
-                // Throw 404 exception
-                context.Response.StatusCode = 404;
-                return;
-            }
-            catch (DirectoryNotFoundException e)
+            catch (IOException e)
             {
                 // Throw 404 exception
                 context.Response.StatusCode = 404;
@@ -44,22 +42,32 @@ namespace FCG.AssertOwnership
             }
         }
 
-        private bool IsValid(string filePath)
+        private bool IsInvalid(string filePath)
         {
-            FileInfo file = new FileInfo(filePath);
-            if (!file.FullName.ToLower().StartsWith(Global.StaticDirectory.ToLower()))
-            {
-                return false;
-            }
+            /* Returns false (meaning the file path is valid) only if:
+                    The requested extension is allowed
+                    The file exists
+                    The file is within the static directory */
+
             string[] acceptedExtensions = { ".html", ".css", ".js" };
             foreach (string extension in acceptedExtensions)
             {
                 if (filePath.EndsWith(extension))
                 {
-                    return true;
+                    try
+                    {
+                        FileInfo file = new FileInfo(filePath);
+                        if (file.FullName.ToLower().StartsWith(Global.StaticDirectory.ToLower()))
+                        {
+                            return false;
+                        }
+                    }catch(IOException e)
+                    {
+                        return true;
+                    }
                 }
             }
-            return false;
+            return true;
         }
     }
 }

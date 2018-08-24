@@ -14,9 +14,11 @@ namespace FCG.AssertOwnership
         {
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
-
+            
             string[] path = null;
             int index = 0;
+
+            // parse out the path from the request
             Match match = Regex.Match(context.Request.Path, @"(?:ownership)((?:\/[^\/?]+)+)(?:\/*\?*)", RegexOptions.IgnoreCase);
             if (match.Success && match.Groups.Count > 1)
             {
@@ -28,14 +30,15 @@ namespace FCG.AssertOwnership
                 return;
             }
 
+            // Check path for either rest or static, or 404 if neither matches
             AOController controller;
-            if (path[index] == RestContentController.Path)
+            if (path[index].ToLower() == RestContentController.Path.ToLower())
             {
                 controller = new RestContentController();
                 controller.Defer(context, path, ++index);
                 return;
             }
-            else if (path[index] == StaticContentController.Path)
+            else if (path[index].ToLower() == StaticContentController.Path.ToLower())
             {
                 controller = new StaticContentController();
                 controller.Defer(context, path, ++index);
