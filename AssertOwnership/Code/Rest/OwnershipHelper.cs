@@ -73,9 +73,9 @@ namespace FCG.AssertOwnership
         public string GenerateToken()
         {
             // Generate a token for use with the API
-            string jsonResponseString = GetRequest(Config.PortalUrl + "sharing/rest/generateToken",
+            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/generateToken",
                                                    new string[] { "client", "referer", "expiration", "f" },
-                                                   new string[] { "referer", Config.PortalUrl, "60", "json" });
+                                                   new string[] { "referer", Global.PortalUrl, "60", "json" });
 
             JObject jsonResponseObject = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
 
@@ -86,10 +86,10 @@ namespace FCG.AssertOwnership
         public JObject GetItemInfo(string itemId)
         {
             // Get detailed information on an item from the portal
-            string jsonResponseString = GetRequest(Config.PortalUrl + "sharing/rest/content/items/" + itemId,
+            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/content/items/" + itemId,
                                                    new string[] { "f" },
                                                    new string[] { "json" });
-            string groups = GetRequest(Config.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
+            string groups = GetRequest(Global.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
                                                    new string[] { "f" },
                                                    new string[] { "json" });
 
@@ -102,7 +102,7 @@ namespace FCG.AssertOwnership
         public JObject GetUserInfo(string user)
         {
             // Get detailed information on a user from the portal
-            string jsonResponseString = GetRequest(Config.PortalUrl + "sharing/rest/community/users/" + user,
+            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/community/users/" + user,
                                                    new string[] { "f" },
                                                    new string[] { "json" });
 
@@ -114,7 +114,7 @@ namespace FCG.AssertOwnership
         public JObject GetUserContent(string username, string folderId)
         {
             // Get user content for a specified folder
-            return StringToJson(GetRequest(Config.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
+            return StringToJson(GetRequest(Global.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
                                  new string[] { "f" },
                                  new string[] { "json" }));
         }
@@ -122,7 +122,7 @@ namespace FCG.AssertOwnership
 
         public JObject GetGroupContent(string groupId)
         {
-            return StringToJson(GetRequest(Config.PortalUrl + "sharing/rest/content/groups/" + groupId,
+            return StringToJson(GetRequest(Global.PortalUrl + "sharing/rest/content/groups/" + groupId,
                                 new string[] { "f" },
                                 new string[] { "json" }));
         }

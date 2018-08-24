@@ -11,7 +11,7 @@ namespace FCG.AssertOwnership
 
         public void Defer(HttpContext context, string[] path, int index)
         {
-            string filePath = Config.StaticDirectory;
+            string filePath = Global.StaticDirectory;
 
             for (int i = index; i < path.Length; i++)
             {
@@ -21,7 +21,7 @@ namespace FCG.AssertOwnership
             if (!IsValid(filePath))
             {
                 // Throw 403 Exception
-                context.Response.StatusCode = 403;
+                context.Response.StatusCode = 404;
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace FCG.AssertOwnership
         private bool IsValid(string filePath)
         {
             FileInfo file = new FileInfo(filePath);
-            if (!file.FullName.ToLower().StartsWith(Config.StaticDirectory.ToLower()))
+            if (!file.FullName.ToLower().StartsWith(Global.StaticDirectory.ToLower()))
             {
                 return false;
             }

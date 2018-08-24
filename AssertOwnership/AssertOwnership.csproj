@@ -74,9 +74,9 @@
   <ItemGroup>
     <Compile Include="Code\AOController.cs" />
     <Compile Include="Code\AOHttpHandler.cs" />
-    <Compile Include="Code\Config.cs" />
+    <Compile Include="Code\Global.cs" />
     <Compile Include="Code\Rest\ChangeOwnerHandler.cs" />
-    <Compile Include="Code\AssertOwnershipHandler.cs" />
+    <Compile Include="Code\AssertOwnershipController.cs" />
     <Compile Include="Code\Rest\RestContentController.cs" />
     <Compile Include="Code\Static\StaticContentController.cs" />
     <Compile Include="Code\Rest\OwnershipHelper.cs" />
@@ -87,7 +87,9 @@
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />
     <None Include="packages.config" />
-    <Content Include="interactive.html" />
+    <Content Include="Interactive\interactive.css" />
+    <Content Include="Interactive\interactive.html" />
+    <Content Include="Interactive\interactive.js" />
     <Content Include="PKIAuthenticationModule.key.snk" />
   </ItemGroup>
   <PropertyGroup>

@@ -5,7 +5,7 @@ using System.Web;
 
 namespace FCG.AssertOwnership
 {
-    public class Config
+    public class Global
     {
         public static string BaseDirectory { get { return @"C:\inetpub\wwwroot\portal\Ownership"; } }
 
