@@ -42,11 +42,11 @@ namespace FCG.AssertOwnership
 
             return reader.ReadToEnd();
         }
+        
 
-
-        public JObject StringToJson(string json)
+        public T DeserializeJson<T>(string json)
         {
-            return JsonConvert.DeserializeObject<JObject>(json);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
 
@@ -114,7 +114,7 @@ namespace FCG.AssertOwnership
         public JObject GetUserContent(string username, string folderId)
         {
             // Get user content for a specified folder
-            return StringToJson(GetRequest(Global.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
+            return DeserializeJson<JObject>(GetRequest(Global.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
                                  new string[] { "f" },
                                  new string[] { "json" }));
         }
@@ -122,7 +122,7 @@ namespace FCG.AssertOwnership
 
         public JObject GetGroupContent(string groupId)
         {
-            return StringToJson(GetRequest(Global.PortalUrl + "sharing/rest/content/groups/" + groupId,
+            return DeserializeJson<JObject>(GetRequest(Global.PortalUrl + "sharing/rest/content/groups/" + groupId,
                                 new string[] { "f" },
                                 new string[] { "json" }));
         }

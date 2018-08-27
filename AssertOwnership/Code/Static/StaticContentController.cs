@@ -1,19 +1,27 @@
 ﻿using System.Web;
 using System.IO;
+using System.Collections.Specialized;
 
 namespace FCG.AssertOwnership
 {
     public class StaticContentController : AOController
     {
         public static string Path { get { return "static"; } }
-
+        private NameValueCollection acceptedExtensions = new NameValueCollection();
         private OwnershipHelper helper = new OwnershipHelper();
+
+        public StaticContentController()
+        {
+            acceptedExtensions.Add(".html", "text/html");
+            acceptedExtensions.Add(".css", "text/css");
+            acceptedExtensions.Add(".js", "application/javascript");
+        }
 
         public void Defer(HttpContext context, string[] path, int index)
         {
             /* Called by AssertOwnershipController, points to the handlers for the static
                based on the path of the request*/
-            
+
             string filePath = Global.StaticDirectory;
 
             for (int i = index; i < path.Length; i++)
@@ -31,6 +39,7 @@ namespace FCG.AssertOwnership
             try
             {
                 // try to find the file, return 404 if not found
+                context.Response.ContentType = GetContentType(filePath);
                 context.Response.Write(File.ReadAllText(filePath));
                 return;
             }
@@ -49,10 +58,9 @@ namespace FCG.AssertOwnership
                     The file exists
                     The file is within the static directory */
 
-            string[] acceptedExtensions = { ".html", ".css", ".js" };
-            foreach (string extension in acceptedExtensions)
+            foreach (string ext in acceptedExtensions.AllKeys)
             {
-                if (filePath.EndsWith(extension))
+                if (filePath.EndsWith(ext))
                 {
                     try
                     {
@@ -61,13 +69,26 @@ namespace FCG.AssertOwnership
                         {
                             return false;
                         }
-                    }catch(IOException e)
+                    }
+                    catch (IOException e)
                     {
                         return true;
                     }
                 }
             }
             return true;
+        }
+
+        private string GetContentType(string filePath)
+        {
+            foreach(string ext in acceptedExtensions.AllKeys)
+            {
+                if (filePath.EndsWith(ext))
+                {
+                    return acceptedExtensions[ext];
+                }
+            }
+            return "application/octet-stream";
         }
     }
 }

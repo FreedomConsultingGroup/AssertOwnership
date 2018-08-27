@@ -48,13 +48,20 @@ namespace FCG.AssertOwnership
             // for each group, add all items in that group to a list
             foreach (JToken group in userInfo["groups"])
             {
-                JObject groupContent = helper.GetGroupContent((string)group["id"]);
+                string groupId = (string)group["id"];
+                JObject groupContent = helper.GetGroupContent(groupId);
 
                 foreach (JToken item in groupContent["items"])
                 {
-                    if (!items.ContainsKey((string)item["id"]))
+                    string itemId = (string)item["id"];
+                    if (!items.ContainsKey(itemId))
                     {
-                        items[(string)item["id"]] = item;
+                        items[itemId] = item;
+                        items[itemId]["groups"] = helper.DeserializeJson<JArray>("[{\"title\": \"" + group["title"] + "\", \"id\": \"" + groupId + "\"}]");
+                    }
+                    else
+                    {
+                        items[itemId]["groups"].Last.AddAfterSelf(helper.DeserializeJson<JObject>("{\"title\": \"" + group["title"] + "\", \"id\": \"" + groupId + "\"}"));
                     }
                 }
             }
