@@ -33,6 +33,7 @@ namespace FCG.AssertOwnership
             else
             {
                 context.Response.StatusCode = 404;
+                Global.LogInfo("Status: 404 returned. Requested URI path does not exist");
                 return;
             }
         }
