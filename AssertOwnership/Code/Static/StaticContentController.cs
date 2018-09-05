@@ -33,6 +33,7 @@ namespace FCG.AssertOwnership
             {
                 // Throw 404 Exception
                 context.Response.StatusCode = 404;
+                Global.LogInfo("Status: 404 returned. Invalid file path, Unacceptable file type or file not found");
                 return;
             }
 
@@ -47,6 +48,7 @@ namespace FCG.AssertOwnership
             {
                 // Throw 404 exception
                 context.Response.StatusCode = 404;
+                Global.LogInfo("Status: 404 returned, Invalid file path, no file found");
                 return;
             }
         }

@@ -2,9 +2,13 @@
 using System.Web;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace FCG.AssertOwnership
 {
@@ -14,35 +18,76 @@ namespace FCG.AssertOwnership
 
         /* Set the base url for the portal and get path of certificate */
         private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT_PATH", EnvironmentVariableTarget.Machine);
-        private X509Certificate2Collection collection;
+        private HttpClient client;
 
         public OwnershipHelper()
         {
             byte[] certFileBinary = File.ReadAllBytes(certPath + "cgoodTEMP.pfx");
             string passwd = File.ReadAllText(certPath + "passwd.txt");
+
             X509Certificate2 cert = new X509Certificate2();
             cert.Import(certFileBinary, passwd, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
-            this.collection = new X509Certificate2Collection(cert);
+
+            WebRequestHandler handler = new WebRequestHandler();
+            handler.ClientCertificates.Add(cert);
+
+            client = new HttpClient(handler);
         }
 
 
-        public string GetRequest(string url, string[] keys, string[] values)
+        public async Task<string> Request(string url, string[] keys, string[] values, string method)
         {
             // Send a get request to the specified portal url, with the parameters specified by the keys and values arrays
-            string parameters = UrlEncodeQuery(keys, values);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.CreateHttp(url + "?" + parameters);
-
-            request.ClientCertificates = this.collection;
-
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream stream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(stream);
-
-            return reader.ReadToEnd();
+            if (method == "GET")
+            {
+                string parameters = EncodeParamsGet(keys, values);
+                string responseString = await client.GetStringAsync(url + "?" + parameters).ConfigureAwait(false);
+                return responseString;
+            }
+            else if (method == "POST")
+            {
+                HttpContent parameters = EncodeParamsPost(keys, values);
+                HttpResponseMessage response = await client.PostAsync(url, parameters).ConfigureAwait(false);
+                string responseString = "";
+                if (response.IsSuccessStatusCode)
+                {
+                    responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    responseString = "error";
+                }
+                return responseString;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
-        
+
+
+        public string EncodeParamsGet(string[] keys, string[] values)
+        {
+            // Encode the keys and values into URL compliant get parameters
+            string parameters = "";
+            parameters += HttpUtility.UrlEncode(keys[0]) + "=" + HttpUtility.UrlEncode(values[0]);
+            for (int i = 1; i < keys.Length; i++)
+            {
+                parameters += "&" + HttpUtility.UrlEncode(keys[i]) + "=" + HttpUtility.UrlEncode(values[i]);
+            }
+
+            return parameters;
+        }
+
+        private HttpContent EncodeParamsPost(string[] keys, string[] values)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                dict.Add(keys[i], values[i]);
+            }
+            return new FormUrlEncodedContent(dict);
+        }
 
         public T DeserializeJson<T>(string json)
         {
@@ -56,26 +101,13 @@ namespace FCG.AssertOwnership
         }
 
 
-        public string UrlEncodeQuery(string[] keys, string[] values)
-        {
-            // Encode the keys and values into URL compliant get parameters
-            string parameters = "";
-            parameters += HttpUtility.UrlEncode(keys[0]) + "=" + HttpUtility.UrlEncode(values[0]);
-            for (int i = 1; i < keys.Length; i++)
-            {
-                parameters += "&" + HttpUtility.UrlEncode(keys[i]) + "=" + HttpUtility.UrlEncode(values[i]);
-            }
-
-            return parameters;
-        }
-
-
         public string GenerateToken()
         {
             // Generate a token for use with the API
-            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/generateToken",
+            string jsonResponseString = Request(Global.PortalUrl + "sharing/rest/generateToken",
                                                    new string[] { "client", "referer", "expiration", "f" },
-                                                   new string[] { "referer", Global.PortalUrl, "60", "json" });
+                                                   new string[] { "referer", Global.PortalUrl, "60", "json" },
+                                                   "GET").Result;
 
             JObject jsonResponseObject = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
 
@@ -86,12 +118,14 @@ namespace FCG.AssertOwnership
         public JObject GetItemInfo(string itemId)
         {
             // Get detailed information on an item from the portal
-            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/content/items/" + itemId,
+            string jsonResponseString = Request(Global.PortalUrl + "sharing/rest/content/items/" + itemId,
                                                    new string[] { "f" },
-                                                   new string[] { "json" });
-            string groups = GetRequest(Global.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
+                                                   new string[] { "json" },
+                                                   "GET").Result;
+            string groups = Request(Global.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
                                                    new string[] { "f" },
-                                                   new string[] { "json" });
+                                                   new string[] { "json" },
+                                                   "GET").Result;
 
             JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
             jsonObj["groups"] = JsonConvert.DeserializeObject<JObject>(groups);
@@ -102,9 +136,10 @@ namespace FCG.AssertOwnership
         public JObject GetUserInfo(string user)
         {
             // Get detailed information on a user from the portal
-            string jsonResponseString = GetRequest(Global.PortalUrl + "sharing/rest/community/users/" + user,
+            string jsonResponseString = Request(Global.PortalUrl + "sharing/rest/community/users/" + user,
                                                    new string[] { "f" },
-                                                   new string[] { "json" });
+                                                   new string[] { "json" },
+                                                   "GET").Result;
 
             JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
             return jsonObj;
@@ -114,17 +149,19 @@ namespace FCG.AssertOwnership
         public JObject GetUserContent(string username, string folderId)
         {
             // Get user content for a specified folder
-            return DeserializeJson<JObject>(GetRequest(Global.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
+            return DeserializeJson<JObject>(Request(Global.PortalUrl + "sharing/rest/content/users/" + username + "/" + folderId,
                                  new string[] { "f" },
-                                 new string[] { "json" }));
+                                 new string[] { "json" },
+                                 "GET").Result);
         }
 
 
         public JObject GetGroupContent(string groupId)
         {
-            return DeserializeJson<JObject>(GetRequest(Global.PortalUrl + "sharing/rest/content/groups/" + groupId,
+            return DeserializeJson<JObject>(Request(Global.PortalUrl + "sharing/rest/content/groups/" + groupId,
                                 new string[] { "f" },
-                                new string[] { "json" }));
+                                new string[] { "json" },
+                                "GET").Result);
         }
     }
 }

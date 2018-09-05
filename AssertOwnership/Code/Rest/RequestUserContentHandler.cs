@@ -20,6 +20,14 @@ namespace FCG.AssertOwnership
             // If the user doesn't exist, exit with 403 response (Forbidden)
             if (userInfo["error"] != null || ((string)userInfo["level"]) != "2")
             {
+                if (userInfo["error"] != null)
+                {
+                    Global.LogInfo("Status: 403 returned. Specified user does not exist");
+                }
+                else
+                {
+                    Global.LogInfo("Status: 403 returned. Specified user does not have the correct permissions for this request");
+                }
                 context.Response.StatusCode = 403;
                 return;
             }
@@ -41,6 +49,7 @@ namespace FCG.AssertOwnership
 
             JObject items = GetItems(username, folder, true);
             context.Response.ContentType = "application/json";
+            Global.LogInfo("Status: 200 returned. Returned user item information for user " + user);
             context.Response.Write(helper.JsonToString(items));
         }
 

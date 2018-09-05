@@ -1,17 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using log4net;
+using log4net.Config;
+using System.IO;
 
 namespace FCG.AssertOwnership
 {
     public class Global
     {
         // Global variables used by different files, as well as things that may need to be changed by other users
-        public const string BaseDirectory = @"C:\inetpub\wwwroot\portal\Ownership";
+        public const string RootDirectory = @"C:\inetpub\";
 
-        public const string StaticDirectory = BaseDirectory + @"\static";
+        public const string BaseDirectory = RootDirectory + @"wwwroot\portal\Ownership\";
+
+        public const string StaticDirectory = BaseDirectory + @"static";
 
         public const string PortalUrl = @"https://fcg-arcgis-srv.freedom.local/portal/";
+        
+        private static readonly string LogConfig = System.Environment.GetEnvironmentVariable("log4net_LOG_PATH") + @"AssertOwnership\log4net_config.xml";
+        private static ILog Log = null;
+        
+        public static void LogInfo(string message)
+        {
+            if(Log == null)
+            {
+                Log = LogManager.GetLogger(typeof(Global));
+                XmlConfigurator.Configure(new FileInfo(LogConfig));
+                Log.Info("Logging started");
+            }
+            Log.Info(message);
+        }
     }
 }

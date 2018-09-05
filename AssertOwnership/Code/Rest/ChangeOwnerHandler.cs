@@ -16,6 +16,7 @@ namespace FCG.AssertOwnership
             HttpRequest request = context.Request;
             if (request.HttpMethod != "POST")
             {
+                Global.LogInfo("Status: 405 returned. Invalid request method. required POST, received " + request.HttpMethod);
                 context.Response.StatusCode = 405;
                 return;
             }
@@ -23,63 +24,95 @@ namespace FCG.AssertOwnership
             string user = context.User.Identity.Name;
             // Get the info for the user
             JObject userInfo = helper.GetUserInfo(user);
-            // If the user doesn't exist, exit with 403 response (Forbidden)
+            // If the user doesn't exist or doesn't have the right permissions, exit with 403 response (Forbidden)
             if (userInfo["error"] != null || ((string)userInfo["level"]) != "2")
             {
+                if (userInfo["error"] != null)
+                {
+                    Global.LogInfo("Status: 403 returned. Specified user does not exist");
+                }
+                else
+                {
+                    Global.LogInfo("Status: 403 returned. Specified user does not have the correct permissions for this request");
+                }
                 context.Response.StatusCode = 403;
                 return;
             }
 
             // Get item ID, the new owner of the item, and the destination folder from the request parameters
-            string itemID = request["itemid"];
+            string itemID = request["id"];
             string newOwner = request["newowner"];
             string newFolder = request["newfolder"];
 
-            // If the item ID or new owner aren't specified exit with 400 response (Client Error)
-            if (itemID == null || newOwner == null)
+            // If the item ID isn't specified, exit with 400 response (Client Error)
+            if (itemID == null)
             {
+                Global.LogInfo("Status: 400 returned. User did not specify item ID");
                 context.Response.StatusCode = 400;
                 return;
+            }
+
+            // If the new owner is not specified, default to the user who made the request
+            if (newOwner == null)
+            {
+                newOwner = user;
             }
 
             // If the destination folder is not specified, default to "/"
             if (newFolder == null)
             {
-                newFolder = "";
+                newFolder = "/";
+            }
+
+            // If the new owner is different from the user making the request, the user must be an admin with reassignItems privileges
+            // This means that regular users can only assign items to themselves
+            if (newOwner != user)
+            {
+                if (!userInfo["privileges"].Contains("portal:admin:reassignItems"))
+                {
+                    context.Response.StatusCode = 403;
+                    Global.LogInfo("Status: 403 returned. Specified user does not have portal:admin:reassignItems permission, which is required to assert ownership as another user");
+                    return;
+                }
             }
 
             JObject itemInfo = helper.GetItemInfo(itemID);
             if (itemInfo["ownerFolder"] == null)
             {
-                itemInfo["ownerFolder"] = "";
+                itemInfo["ownerFolder"] = "/";
             }
+            string oldOwner = (string)itemInfo["owner"];
 
+            if(oldOwner == newOwner)
+            {
+                context.Response.StatusCode = 400;
+                Global.LogInfo("Status: 400 returned. Specified user " + user + " already owns item " + itemID);
+                return;
+            }
             /* Check to see if the item, the current owner, and the new owner all share a group.
                If not, then exit with 401 response (Unauthorized) */
             if (InvalidGroups(itemInfo, newOwner))
             {
                 context.Response.StatusCode = 401;
+                Global.LogInfo("Status: 401 returned. User is unauthorized to take ownership of this item, no groups shared between item, owner, and user");
                 return;
             }
 
             // Generate a token to use with API resuests
             string token = helper.GenerateToken();
 
-            JObject response = helper.DeserializeJson<JObject>(helper.GetRequest(Global.PortalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
-                                         new string[] { "targetUsername", "targetFoldername", "token", "f" },
-                                         new string[] { newOwner, newFolder, token, "json" }));
+            JObject response = helper.DeserializeJson<JObject>(helper.Request(Global.PortalUrl + "/sharing/rest/content/users/" + itemInfo["owner"] + "/" + itemInfo["ownerFolder"] + "/items/" + itemID + "/reassign",
+                                         new string[] { "targetUsername", "targetFolderName", "token", "f" },
+                                         new string[] { newOwner, newFolder, token, "json" },
+                                         "POST").Result);
 
-            // Return the word success if it correectly transfered ownership. Otherwise, return the error message
-            if (response["success"] != null)
+            // Return success if it correectly transfered ownership. Otherwise, return the error message
+            context.Response.Write(response);
+            if (response.Value<bool>("success") == true)
             {
-                context.Response.Write("success");
-                return;
+                Global.LogInfo("Status: 200 returned. Item with id " + itemID + " successfully transfered from " + oldOwner + " to " + newOwner);
             }
-            else
-            {
-                context.Response.StatusCode = 500;
-                return;
-            }
+            return;
         }
 
 
@@ -122,5 +155,5 @@ namespace FCG.AssertOwnership
     }
 
 
-    
+
 }

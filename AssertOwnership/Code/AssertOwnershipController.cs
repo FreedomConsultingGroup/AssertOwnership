@@ -14,7 +14,12 @@ namespace FCG.AssertOwnership
         {
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
-            
+
+            Global.LogInfo("Recieved Request:\n\tURL: " + context.Request.Path +
+                           "\n\tReferrer: " + context.Request.UrlReferrer +
+                           "\n\tAgent" + context.Request.UserAgent +
+                           "\n\tIP: " + context.Request.UserHostAddress +
+                           "\n\tUser: " + context.User.Identity.Name);
             string[] path = null;
             int index = 0;
 
@@ -27,6 +32,7 @@ namespace FCG.AssertOwnership
             else
             {
                 context.Response.StatusCode = 404;
+                Global.LogInfo("Status: 404 returned");
                 return;
             }
 
@@ -47,6 +53,7 @@ namespace FCG.AssertOwnership
             else
             {
                 context.Response.StatusCode = 404;
+                Global.LogInfo("Status: 404 returned");
                 return;
             }
         }

@@ -1,4 +1,4 @@
-﻿var portalUrl = "https://fcg-arcgis-srv.freedom.local/portal"
+﻿var portalUrl = "https://fcg-arcgis-srv.freedom.local/portal";
 function successFunction(data) {
     let table = $("#group-items-table")[0];
     for (var id in data) {
@@ -40,9 +40,33 @@ function successFunction(data) {
             }
             let tagsText = tags.join(", ");
             row.insertCell(-1).appendChild(document.createTextNode(data[id]["tags"]));
+
+            var chownButton = document.createElement("button");
+            chownButton.addEventListener("click", generateOnClickFunction(id));
+            chownButton.appendChild(document.createTextNode("Assert Ownership"));
+            row.insertCell(-1).appendChild(chownButton);
         }
     }
-    document.styleSheets[0].
+}
+
+function generateOnClickFunction(id) {
+    return function (evt) {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: portalUrl + "/ownership/rest/assert",
+            data: {
+                "id": id
+            },
+            success: function (data) {
+                if (data["success"] == true) {
+                    alert("Item successfully transfered")
+                } else {
+                    alert("Something went wrong: \n" + data["error"]["message"])
+                }
+            }
+        });
+    };
 }
 
 function main() {
