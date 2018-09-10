@@ -38,7 +38,7 @@ namespace FCG.AssertOwnership
                 foreach (Type t in domain.GetExportedTypes())
                 {
                     // check if it inherits from RestHttpHandler
-                    if (typeof(RestHttpHandler).IsSubclassOf(t) && !t.IsAbstract)
+                    if (t.IsSubclassOf(typeof(RestHttpHandler)) && !t.IsAbstract)
                     {
                         // initialize the object and add it to the list
                         handlers.Add((RestHttpHandler)Activator.CreateInstance(t));

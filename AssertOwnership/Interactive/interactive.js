@@ -1,4 +1,14 @@
-﻿var portalUrl = "https://fcg-arcgis-srv.freedom.local/portal";
+﻿var portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
+
+var user = "";
+$.ajax({
+    dataType: "json",
+    url: portalUrl + "ownership/rest/whoami",
+    success: function (data) {
+        user = data["name"];
+    }
+});
+
 function successFunction(data) {
     let table = $("#group-items-table")[0];
     for (var id in data) {
@@ -6,7 +16,7 @@ function successFunction(data) {
             let row = table.insertRow(-1);
 
             let title = document.createElement("a");
-            title.setAttribute("href", portalUrl + "/home/item.html?id=" + id);
+            title.setAttribute("href", portalUrl + "home/item.html?id=" + id);
             title.setAttribute("target", "_blank");
             title.setAttribute("rel", "noopener noreferrer")
             title.appendChild(document.createTextNode(data[id]["title"]));
@@ -20,7 +30,7 @@ function successFunction(data) {
             for (var i in data[id]["groups"]) {
                 var group = data[id]["groups"][i];
                 var a = document.createElement("a");
-                a.setAttribute("href", portalUrl + "/home/group.html?id=" + group["id"]);
+                a.setAttribute("href", portalUrl + "home/group.html?id=" + group["id"]);
                 a.setAttribute("target", "_blank");
                 a.setAttribute("rel", "noopener noreferrer")
                 a.appendChild(document.createTextNode(group["title"]));
@@ -41,10 +51,12 @@ function successFunction(data) {
             let tagsText = tags.join(", ");
             row.insertCell(-1).appendChild(document.createTextNode(data[id]["tags"]));
 
-            var chownButton = document.createElement("button");
-            chownButton.addEventListener("click", generateOnClickFunction(id));
-            chownButton.appendChild(document.createTextNode("Assert Ownership"));
-            row.insertCell(-1).appendChild(chownButton);
+            if (data[id]["owner"] != user) {
+                var chownButton = document.createElement("button");
+                chownButton.addEventListener("click", generateOnClickFunction(id));
+                chownButton.appendChild(document.createTextNode("Assert Ownership"));
+                row.insertCell(-1).appendChild(chownButton);
+            }
         }
     }
 }
@@ -54,7 +66,7 @@ function generateOnClickFunction(id) {
         $.ajax({
             method: "POST",
             dataType: "json",
-            url: portalUrl + "/ownership/rest/assert",
+            url: portalUrl + "ownership/rest/assert",
             data: {
                 "id": id
             },
@@ -71,7 +83,7 @@ function generateOnClickFunction(id) {
 
 function main() {
     $.ajax({
-        url: portalUrl + "/ownership/rest/group",
+        url: portalUrl + "ownership/rest/group",
         dataType: "json",
         success: successFunction
     });
