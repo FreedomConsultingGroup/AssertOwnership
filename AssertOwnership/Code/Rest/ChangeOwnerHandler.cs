@@ -5,13 +5,16 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class ChangeOwnerHandler : AOHttpHandler
+    public class ChangeOwnerHandler : RestHttpHandler
     {
-        public static string Path { get { return "assert"; } }
+        private OwnershipHelper helper;
 
-        private OwnershipHelper helper = new OwnershipHelper();
+        public ChangeOwnerHandler() : base("chown")
+        {
+            helper = new OwnershipHelper();
+        }
 
-        public void ProcessRequest(HttpContext context)
+        public override void ProcessRequest(HttpContext context)
         {
             HttpRequest request = context.Request;
             if (request.HttpMethod != "POST")

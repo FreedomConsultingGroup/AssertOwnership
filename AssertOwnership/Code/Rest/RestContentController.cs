@@ -1,4 +1,7 @@
-﻿using System.Web;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
 namespace FCG.AssertOwnership
 {
@@ -11,31 +14,38 @@ namespace FCG.AssertOwnership
             /* Called by AssertOwnershipController, points to the handlers for the rest API
                based on the path of the request*/
 
-            AOHttpHandler handler;
-            if (path[index].ToLower() == ChangeOwnerHandler.Path.ToLower())
+            RestHttpHandler[] handlers = GetImplementedClasses();
+            foreach (RestHttpHandler handler in handlers)
             {
-                handler = new ChangeOwnerHandler();
-                handler.ProcessRequest(context);
-                return;
+                if (path[index].ToLower() == handler.Path.ToLower())
+                {
+                    handler.ProcessRequest(context);
+                    return;
+                }
             }
-            else if (path[index].ToLower() == RequestUserContentHandler.Path.ToLower())
+            context.Response.StatusCode = 404;
+            Global.LogInfo("Status: 404 returned. Requested URI path does not exist");
+            return;
+        }
+
+        private RestHttpHandler[] GetImplementedClasses()
+        {
+            List<RestHttpHandler> handlers = new List<RestHttpHandler>();
+            // get assemblies used in the current domain
+            foreach (var domain in AppDomain.CurrentDomain.GetAssemblies())
             {
-                handler = new RequestUserContentHandler();
-                handler.ProcessRequest(context);
-                return;
+                // get all types in each assembly
+                foreach (Type t in domain.GetExportedTypes())
+                {
+                    // check if it inherits from RestHttpHandler
+                    if (typeof(RestHttpHandler).IsSubclassOf(t) && !t.IsAbstract)
+                    {
+                        // initialize the object and add it to the list
+                        handlers.Add((RestHttpHandler)Activator.CreateInstance(t));
+                    }
+                }
             }
-            else if (path[index].ToLower() == RequestGroupContentHandler.Path.ToLower())
-            {
-                handler = new RequestGroupContentHandler();
-                handler.ProcessRequest(context);
-                return;
-            }
-            else
-            {
-                context.Response.StatusCode = 404;
-                Global.LogInfo("Status: 404 returned. Requested URI path does not exist");
-                return;
-            }
+            return handlers.ToArray();
         }
     }
 }

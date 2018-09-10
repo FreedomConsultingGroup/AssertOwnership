@@ -78,10 +78,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\AOController.cs" />
-    <Compile Include="Code\AOHttpHandler.cs" />
+    <Compile Include="Code\Rest\RestHttpHandler.cs" />
     <Compile Include="Code\Global.cs" />
     <Compile Include="Code\Rest\ChangeOwnerHandler.cs" />
     <Compile Include="Code\AssertOwnershipController.cs" />
+    <Compile Include="Code\Rest\WhoAmIHandler.cs" />
     <Compile Include="Code\Rest\RestContentController.cs" />
     <Compile Include="Code\Static\StaticContentController.cs" />
     <Compile Include="Code\Rest\OwnershipHelper.cs" />

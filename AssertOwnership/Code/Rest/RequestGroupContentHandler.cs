@@ -4,13 +4,16 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class RequestGroupContentHandler : AOHttpHandler
+    public class RequestGroupContentHandler : RestHttpHandler
     {
-        public static string Path { get { return "group"; } }
+        private OwnershipHelper helper;
 
-        private OwnershipHelper helper = new OwnershipHelper();
+        public RequestGroupContentHandler() : base("group")
+        {
+            helper = new OwnershipHelper();
+        }
         
-        public void ProcessRequest(HttpContext context)
+        public override void ProcessRequest(HttpContext context)
         {
 
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
