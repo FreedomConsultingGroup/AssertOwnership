@@ -15,7 +15,7 @@ namespace FCG.AssertOwnership
 
         public const string PortalUrl = @"https://fcg-arcgis-srv.freedom.local/portal/";
         
-        private static readonly string LogConfig = System.Environment.GetEnvironmentVariable("log4net_LOG_PATH") + @"AssertOwnership\log4net_config.xml";
+        private static readonly string LogConfig = BaseDirectory + @"log4net.config";
         private static ILog Log = null;
         
         public static void LogInfo(string message)
