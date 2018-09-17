@@ -1,6 +1,9 @@
 ﻿using log4net;
-using log4net.Config;
-using System.IO;
+using log4net.Repository.Hierarchy;
+using log4net.Core;
+using log4net.Appender;
+using log4net.Layout;
+
 
 namespace FCG.AssertOwnership
 {
@@ -22,8 +25,29 @@ namespace FCG.AssertOwnership
         {
             if(Log == null)
             {
+                Hierarchy hierarchy = (Hierarchy)LogManager.GetRepository();
+
+                PatternLayout pattern = new PatternLayout();
+                pattern.ConversionPattern = "%date{MM-dd HH:mm} [%thread] %-5level %logger [%property{NDC}] - %message%newline";
+                pattern.ActivateOptions();
+
+                RollingFileAppender rfa = new RollingFileAppender();
+                rfa.Layout = pattern;
+                rfa.AppendToFile = true;
+                rfa.File = System.Environment.GetEnvironmentVariable("DOT_NET_LOG_PATH") + @"AssertOwnership\AssertOwnership.log";
+                rfa.RollingStyle = RollingFileAppender.RollingMode.Composite;
+                rfa.DatePattern = ".yyyy-MM-dd";
+                rfa.MaxSizeRollBackups = 10;
+                rfa.StaticLogFileName = true;
+                rfa.MaximumFileSize = "1MB";
+                rfa.ActivateOptions();
+
+                hierarchy.Root.AddAppender(rfa);
+
+                hierarchy.Root.Level = Level.All;
+                hierarchy.Configured = true;
+
                 Log = LogManager.GetLogger(typeof(Global));
-                XmlConfigurator.Configure(new FileInfo(LogConfig));
                 Log.Info("Logging started");
             }
             Log.Info(message);

@@ -56,6 +56,8 @@ function successFunction(data) {
                 chownButton.addEventListener("click", generateOnClickFunction(id));
                 chownButton.appendChild(document.createTextNode("Assert Ownership"));
                 row.insertCell(-1).appendChild(chownButton);
+            } else {
+                row.insertCell(-1);
             }
         }
     }
@@ -66,7 +68,7 @@ function generateOnClickFunction(id) {
         $.ajax({
             method: "POST",
             dataType: "json",
-            url: portalUrl + "ownership/rest/assert",
+            url: portalUrl + "ownership/rest/chown",
             data: {
                 "id": id
             },
