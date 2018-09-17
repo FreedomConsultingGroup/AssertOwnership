@@ -120,13 +120,21 @@ namespace FCG.AssertOwnership
                                                    new string[] { "f" },
                                                    new string[] { "json" },
                                                    "GET").Result;
-            string groups = Request(Global.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
+            JObject groups = JsonConvert.DeserializeObject<JObject>(Request(Global.PortalUrl + "sharing/rest/content/items/" + itemId + "/groups",
                                                    new string[] { "f" },
                                                    new string[] { "json" },
-                                                   "GET").Result;
+                                                   "GET").Result);
 
             JObject jsonObj = JsonConvert.DeserializeObject<JObject>(jsonResponseString);
-            jsonObj["groups"] = JsonConvert.DeserializeObject<JObject>(groups);
+            jsonObj["groups"] = groups["admin"];
+            foreach (JToken group in groups["member"])
+            {
+                jsonObj["groups"].Last.AddAfterSelf(group);
+            }
+            foreach (JToken group in groups["other"])
+            {
+                jsonObj["groups"].Last.AddAfterSelf(group);
+            }
             return jsonObj;
         }
 

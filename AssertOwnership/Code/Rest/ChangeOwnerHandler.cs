@@ -1,5 +1,5 @@
-﻿using System.Web;
-using System.Linq;
+﻿using System.Linq;
+using System.Web;
 using Newtonsoft.Json.Linq;
 
 
@@ -86,7 +86,7 @@ namespace FCG.AssertOwnership
             }
             string oldOwner = (string)itemInfo["owner"];
 
-            if(oldOwner == newOwner)
+            if (oldOwner == newOwner)
             {
                 context.Response.StatusCode = 400;
                 Global.LogInfo("Status: 400 returned. Specified user " + user + " already owns item " + itemID);
@@ -97,7 +97,7 @@ namespace FCG.AssertOwnership
             if (InvalidGroups(itemInfo, newOwner))
             {
                 context.Response.StatusCode = 401;
-                Global.LogInfo("Status: 401 returned. User is unauthorized to take ownership of this item, no groups shared between item, owner, and user");
+                Global.LogInfo("Status: 401 returned. User is unauthorized to take ownership of this item, some groups not shared between item, old owner, and new owner");
                 return;
             }
 
@@ -122,38 +122,36 @@ namespace FCG.AssertOwnership
         private bool InvalidGroups(JObject itemInfo, string newOwner)
         {
             /* Checks which group(s) the old owner and the item share, then check to see if the new owner is in those group(s) as well. */
-            JToken itemGroupInfo = itemInfo["groups"]["member"];
+            JToken itemGroupInfo = itemInfo["groups"];
+
             JObject oldUserInfo = helper.GetUserInfo((string)itemInfo["owner"]);
             JObject newUserInfo = helper.GetUserInfo(newOwner);
 
-            bool matches = false;
+            bool noMatch = true;
             string[] matchingGroup = { };
             // Add matching groups to the groups to check in the new owner
             foreach (JToken itemGroup in itemGroupInfo)
             {
-                foreach (JToken oldUserGroup in oldUserInfo["groups"])
+                if (Global.GroupWhitelist.Contains((string)itemGroup["id"]))
                 {
-                    if (oldUserGroup["id"] != null && itemGroup["id"] == oldUserGroup["id"])
+                    continue;
+                }
+                noMatch = true;
+                foreach (JToken newUserGroup in newUserInfo["groups"])
+                {
+                    if (newUserGroup["id"] != null && (string)itemGroup["id"] == (string)newUserGroup["id"])
                     {
-                        matchingGroup[matchingGroup.Length] = (string)itemGroup["id"];
+                        noMatch = false;
                         break;
                     }
                 }
-            }
-
-            if (matchingGroup.Length == 0) { return false; }
-
-            // Check new owner for any of the matching groups
-            foreach (JToken newUserGroup in newUserInfo["groups"])
-            {
-                if (matchingGroup.Contains((string)newUserGroup["id"]))
+                if (noMatch)
                 {
-                    matches = true;
-                    break;
+                    return true;
                 }
             }
 
-            return matches;
+            return false;
         }
     }
 

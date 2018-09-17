@@ -15,11 +15,11 @@ namespace FCG.AssertOwnership
             /* ProcessRequest is automatically called by IIS when it receives a
                request to the url pointed to by web.config */
 
-            Global.LogInfo("Recieved Request:\n\tURL: " + context.Request.Path +
-                           "\n\tReferrer: " + context.Request.UrlReferrer +
-                           "\n\tAgent" + context.Request.UserAgent +
-                           "\n\tIP: " + context.Request.UserHostAddress +
-                           "\n\tUser: " + context.User.Identity.Name);
+            Global.LogInfo("Recieved Request:\r\n\tURL: " + context.Request.Path +
+                           "\r\n\tReferrer: " + context.Request.UrlReferrer +
+                           "\r\n\tAgent" + context.Request.UserAgent +
+                           "\r\n\tIP: " + context.Request.UserHostAddress +
+                           "\r\n\tUser: " + context.User.Identity.Name);
             string[] path = null;
             int index = 0;
 

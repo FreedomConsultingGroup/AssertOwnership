@@ -12,7 +12,7 @@ namespace FCG.AssertOwnership
         {
             helper = new OwnershipHelper();
         }
-        
+
         public override void ProcessRequest(HttpContext context)
         {
 
@@ -68,12 +68,34 @@ namespace FCG.AssertOwnership
                 foreach (JToken item in groupContent["items"])
                 {
                     string itemId = (string)item["id"];
-                    if (!items.ContainsKey(itemId))
+                    JObject itemInfo = helper.GetItemInfo(itemId);
+
+                    // Make sure the user shares all groups with the item
+                    bool addItem = false;
+                    foreach (JToken itemGroup in itemInfo["groups"])
+                    {
+                        addItem = false;
+                        foreach (JToken userGroup in userInfo["groups"])
+                        {
+                            if ((string)userGroup["id"] == (string)itemGroup["id"])
+                            {
+                                addItem = true;
+                                break;
+                            }
+                        }
+                        if (!addItem)
+                        {
+                            // if no match in user groups, break because addItem is false so the item will not be added to the items list
+                            break;
+                        }
+                    }
+
+                    if (addItem && !items.ContainsKey(itemId))
                     {
                         items[itemId] = item;
                         items[itemId]["groups"] = helper.DeserializeJson<JArray>("[{\"title\": \"" + group["title"] + "\", \"id\": \"" + groupId + "\"}]");
                     }
-                    else
+                    else if (addItem)
                     {
                         items[itemId]["groups"].Last.AddAfterSelf(helper.DeserializeJson<JObject>("{\"title\": \"" + group["title"] + "\", \"id\": \"" + groupId + "\"}"));
                     }
