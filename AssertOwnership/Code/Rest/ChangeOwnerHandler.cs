@@ -132,10 +132,12 @@ namespace FCG.AssertOwnership
             // Add matching groups to the groups to check in the new owner
             foreach (JToken itemGroup in itemGroupInfo)
             {
+                // If group is part of the whitelist, ignore it
                 if (Global.GroupWhitelist.Contains((string)itemGroup["id"]))
                 {
                     continue;
                 }
+                // Assuming it's not on the whitelist, check if the user belongs to said group
                 noMatch = true;
                 foreach (JToken newUserGroup in newUserInfo["groups"])
                 {

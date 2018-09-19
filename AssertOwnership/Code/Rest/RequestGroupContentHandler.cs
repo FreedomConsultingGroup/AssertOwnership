@@ -15,7 +15,6 @@ namespace FCG.AssertOwnership
 
         public override void ProcessRequest(HttpContext context)
         {
-
             // Get the username from the identity of the request (which was set by PKIAuthenticationModule)
             string user = context.User.Identity.Name;
             // Get the info for the user
@@ -35,6 +34,7 @@ namespace FCG.AssertOwnership
                 return;
             }
 
+            // GetGroupItems returns null if the user does not blong to any groups, and an empty JObject if no items have been shared to any of the user's groups
             JObject items = GetGroupItems(userInfo);
             if (items == null)
             {
@@ -85,7 +85,7 @@ namespace FCG.AssertOwnership
                         }
                         if (!addItem)
                         {
-                            // if no match in user groups, break because addItem is false so the item will not be added to the items list
+                            // If user does not belong to the item group, break the loop. addItem is false, so neither of the below conditions will run
                             break;
                         }
                     }
