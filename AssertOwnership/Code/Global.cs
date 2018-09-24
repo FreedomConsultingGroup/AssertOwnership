@@ -42,8 +42,10 @@ namespace FCG.AssertOwnership
         {
             Hierarchy hierarchy = (Hierarchy)LogManager.GetRepository();
 
-            PatternLayout pattern = new PatternLayout();
-            pattern.ConversionPattern = "%date{MM-dd HH:mm} [%thread] %-5level %logger [%property{NDC}] - %message%newline";
+            PatternLayout pattern = new PatternLayout
+            {
+                ConversionPattern = "%date{MM-dd HH:mm} [%thread] %-5level %logger [%property{NDC}] - %message%newline"
+            };
             pattern.ActivateOptions();
 
             RollingFileAppender rfa = new RollingFileAppender

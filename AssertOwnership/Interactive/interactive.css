@@ -13,3 +13,38 @@ td, th {
 tr:nth-child(even) {
     background-color: #dddddd;
 }
+
+.navbar {
+    display: inline-block;
+    background: cyan;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.button-list {
+    text-align: right;
+    list-style: none;
+    display: inline-block;
+    margin: 0px;
+    margin-left: 50%;
+    padding: 2px;
+}
+
+.button-list li {
+    text-align: left;
+    display: inline-block;
+    padding-left: 10px;
+}
+
+.navbar-button {
+    position: relative;
+    display: inline-block;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: lightblue;
+    color: black;
+    border-width: 3px;
+    border-color: black;
+    margin-left: 2px;
+}

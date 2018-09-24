@@ -6,6 +6,7 @@ $.ajax({
     url: portalUrl + "ownership/rest/whoami",
     success: function (data) {
         user = data["name"];
+        $("#username")[0].innerHTML = user;
     }
 });
 
@@ -28,11 +29,11 @@ function successFunction(data) {
 
             let groups = [];
             for (var i in data[id]["groups"]) {
-                var group = data[id]["groups"][i];
+                let group = data[id]["groups"][i];
                 var a = document.createElement("a");
                 a.setAttribute("href", portalUrl + "home/group.html?id=" + group["id"]);
                 a.setAttribute("target", "_blank");
-                a.setAttribute("rel", "noopener noreferrer")
+                a.setAttribute("rel", "noopener noreferrer");
                 a.appendChild(document.createTextNode(group["title"]));
                 groups.push(a);
             }
