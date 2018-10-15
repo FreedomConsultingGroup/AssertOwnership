@@ -17,8 +17,9 @@ namespace FCG.AssertOwnership
         /* Set the base url for the portal and get path of certificate */
         private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT_PATH", EnvironmentVariableTarget.Machine);
         private HttpClient client;
+        private static OwnershipHelper instance = new OwnershipHelper();
 
-        public OwnershipHelper()
+        private OwnershipHelper()
         {
             byte[] certFileBinary = File.ReadAllBytes(certPath + "cgoodTEMP.pfx");
             string passwd = File.ReadAllText(certPath + "passwd.txt");
@@ -30,6 +31,12 @@ namespace FCG.AssertOwnership
             handler.ClientCertificates.Add(cert);
 
             client = new HttpClient(handler);
+        }
+
+
+        public static OwnershipHelper getInstance()
+        {
+            return instance;
         }
 
 

@@ -8,7 +8,7 @@ namespace FCG.AssertOwnership
     {
         public static string Path { get { return "static"; } }
         private NameValueCollection acceptedExtensions = new NameValueCollection();
-        private OwnershipHelper helper = new OwnershipHelper();
+        private OwnershipHelper helper = OwnershipHelper.getInstance();
 
         public StaticContentController()
         {

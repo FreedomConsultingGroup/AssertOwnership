@@ -11,7 +11,7 @@ namespace FCG.AssertOwnership
 
         public ChangeOwnerHandler() : base("chown")
         {
-            helper = new OwnershipHelper();
+            helper = OwnershipHelper.getInstance();
         }
 
         public override void ProcessRequest(HttpContext context)

@@ -10,7 +10,7 @@ namespace FCG.AssertOwnership
 
         public RequestGroupContentHandler() : base("group")
         {
-            helper = new OwnershipHelper();
+            helper = OwnershipHelper.getInstance();
         }
 
         public override void ProcessRequest(HttpContext context)
