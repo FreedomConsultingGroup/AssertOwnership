@@ -40,11 +40,11 @@ tr:nth-child(even) {
     padding: 2px;
 }
 
-    .button-list li {
-        text-align: left;
-        display: inline-block;
-        padding-left: 10px;
-    }
+.button-list li {
+    text-align: left;
+    display: inline-block;
+    padding-left: 10px;
+}
 
 .navbar-button {
     position: relative;

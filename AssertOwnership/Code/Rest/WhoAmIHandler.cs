@@ -10,11 +10,21 @@ namespace FCG.AssertOwnership
         public override void ProcessRequest(HttpContext context)
         {
             // return the username of the current user
-            context.Response.ContentType = "application/json";
-            JObject userInfo = 
             string name = context.User.Identity.Name;
-            string thumbnail = 
-            context.Response.Write("{\"name\": \"" + name + "\"}");
+            OwnershipHelper helper = OwnershipHelper.getInstance();
+
+            JObject userInfo = helper.GetUserInfo(name);
+            string thumbnail = (string)userInfo["thumbnail"];
+
+            context.Response.ContentType = "application/json";
+            if (thumbnail == null)
+            {
+                context.Response.Write("{\"name\": \"" + name + "\", \"thumbnail\": " + thumbnail + " }");
+            }
+            else
+            {
+                context.Response.Write("{\"name\": \"" + name + "\", \"thumbnail\": \"" + thumbnail + "\" }");
+            }
 
             Global.LogInfo("User " + name + " requested whoami.");
             return;

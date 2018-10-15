@@ -1,12 +1,20 @@
 ﻿var portalUrl = "https://fcg-arcgis-srv.freedom.local/portal/";
 
 var user = "";
+var thumbnail = "";
 $.ajax({
     dataType: "json",
     url: portalUrl + "ownership/rest/whoami",
     success: function (data) {
         user = data["name"];
         $("#username")[0].innerHTML = user;
+
+        let thumbnail = $("#avatar")[0];
+        if (data["thumbnail"] === null) {
+            thumbnail.src = "https://fcg-arcgis-srv.freedom.local/portal/home/10.6/js/arcgisonline/css/images/no-user-thumb.jpg";
+        } else {
+            thumbnail.src = "https://fcg-arcgis-srv.freedom.local/portal/sharing/rest/community/users/" + user + "/info/" + data["thumbnail"];
+        }
     }
 });
 
@@ -19,7 +27,7 @@ function successFunction(data) {
             let title = document.createElement("a");
             title.setAttribute("href", portalUrl + "home/item.html?id=" + id);
             title.setAttribute("target", "_blank");
-            title.setAttribute("rel", "noopener noreferrer")
+            title.setAttribute("rel", "noopener noreferrer");
             title.appendChild(document.createTextNode(data[id]["title"]));
             row.insertCell(-1).appendChild(title);
 
@@ -40,7 +48,7 @@ function successFunction(data) {
             let cell = row.insertCell(-1);
             for (var group in groups) {
                 cell.appendChild(groups[group]);
-                if (group != groups.length - 1) {
+                if (group !== groups.length - 1) {
                     cell.appendChild(document.createTextNode(", "));
                 }
             }
@@ -52,7 +60,7 @@ function successFunction(data) {
             let tagsText = tags.join(", ");
             row.insertCell(-1).appendChild(document.createTextNode(data[id]["tags"]));
 
-            if (data[id]["owner"] != user) {
+            if (data[id]["owner"] !== user) {
                 var chownButton = document.createElement("button");
                 chownButton.addEventListener("click", generateOnClickFunction(id));
                 chownButton.appendChild(document.createTextNode("Assert Ownership"));
@@ -74,10 +82,10 @@ function generateOnClickFunction(id) {
                 "id": id
             },
             success: function (data) {
-                if (data["success"] == true) {
-                    alert("Item successfully transfered")
+                if (data["success"] === true) {
+                    alert("Item successfully transfered");
                 } else {
-                    alert("Something went wrong: \n" + data["error"]["message"])
+                    alert("Something went wrong: \n" + data["error"]["message"]);
                 }
             }
         });
