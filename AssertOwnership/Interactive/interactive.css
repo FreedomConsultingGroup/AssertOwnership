@@ -7,8 +7,8 @@
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 95%;
-    margin-left: 2.5%;
+    width: 85%;
+    margin-left: 7.5%;
 }
 
 td, th {
@@ -21,39 +21,30 @@ tr:nth-child(even) {
     background-color: #dddddd;
 }
 
-.navbar {
-    display: inline-block;
-    background: cyan;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    border: 1px solid black;
-}
-
-.button-list {
-    width: 10%;
-    text-align: right;
-    list-style: none;
-    display: inline-block;
-    margin: 0px;
-    margin-left: 42.5%;
-    padding: 2px;
-}
-
-.button-list li {
-    text-align: left;
-    display: inline-block;
-    padding-left: 10px;
+.table-description {
+    width: 85%;
+    text-align: center;
+    margin-left: 7.5%
 }
 
 .navbar-button {
-    position: relative;
     display: inline-block;
-    border-radius: 8px;
+    border: 1px solid black;
+    padding: 0px 10px 0px 10px;
+}
+
+.navbar-user-link {
+    border: 1px solid black;
+}
+
+.navbar-avatar {
+    display: inline-block;
     padding: 5px;
-    background-color: lightblue;
-    color: black;
-    border-width: 3px;
-    border-color: black;
-    margin-left: 2px;
+    max-height: 150px;
+    max-width: 150px;
+}
+
+.navbar-username {
+    display: inline-block;
+    padding: 5px;
 }
