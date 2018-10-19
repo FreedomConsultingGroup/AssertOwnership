@@ -1,17 +1,20 @@
 ﻿using System.Web;
 using System.IO;
 using System.Collections.Specialized;
+using System;
 
 namespace FCG.AssertOwnership
 {
     public class StaticContentController : AOController
     {
         public static string Path { get { return "static"; } }
-        private NameValueCollection acceptedExtensions = new NameValueCollection();
-        private OwnershipHelper helper = OwnershipHelper.getInstance();
+        private NameValueCollection acceptedExtensions;
+        private OwnershipHelper helper;
 
         public StaticContentController()
         {
+            helper = OwnershipHelper.getInstance();
+            acceptedExtensions = new NameValueCollection();
             acceptedExtensions.Add(".html", "text/html");
             acceptedExtensions.Add(".css", "text/css");
             acceptedExtensions.Add(".js", "application/javascript");
@@ -21,13 +24,9 @@ namespace FCG.AssertOwnership
         {
             /* Called by AssertOwnershipController, points to the handlers for the static
                based on the path of the request*/
-
-            string filePath = Global.StaticDirectory;
-
-            for (int i = index; i < path.Length; i++)
-            {
-                filePath += @"\" + path[i];
-            }
+            string[] subPath = new string[path.Length - index];
+            Array.Copy(path, index, subPath, 0, subPath.Length);
+            string filePath = System.IO.Path.Combine(Global.StaticDirectory, System.IO.Path.Combine(subPath));
 
             if (IsInvalid(filePath))
             {

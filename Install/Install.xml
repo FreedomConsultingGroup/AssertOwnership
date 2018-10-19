@@ -11,6 +11,9 @@
       <File>
         <Name>Newtonsoft.Json.dll</Name>
       </File>
+      <File>
+        <Name>AssertOwnership.config</Name>
+      </File>
     </Folder>
     <Folder name="static">
       <File>
@@ -51,4 +54,8 @@
       <Name>web.config</Name>
     </File>
   </Folder>
+  <Environment>
+    <!-- This should be set to the location of AssertOwnership.config-->
+    <Variable name="ASSERT_OWNERSHIP_CONFIG">%INSTALL_DIRECTORY%\Bin</Variable>
+  </Environment>
 </Root>

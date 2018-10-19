@@ -26,6 +26,7 @@ namespace FCG.AssertOwnership.Install
             XmlElement root = xmlDoc.DocumentElement;
 
             Copy(Path.Combine(sourcePath, "Files"), "", root.FirstChild);
+            SetVars(root.LastChild);
         }
 
         static void Copy(string path, string subfolder, XmlNode folder)
@@ -59,6 +60,23 @@ namespace FCG.AssertOwnership.Install
             {
                 Copy(path, subfolder, node);
             }
+        }
+
+        static void SetVars(XmlNode varRoot)
+        {
+            foreach (XmlNode node in varRoot.SelectNodes("Variable"))
+            {
+                string name = node.Attributes["name"].Value;
+                string value = node.InnerText.Replace("%INSTALL_DIRECTORY%", destPath).Replace(@"\\", @"\");
+                Environment.SetEnvironmentVariable(name, value);
+            }
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/C iisreset /RESTART";
+            process.StartInfo = startInfo;
+            process.Start();
         }
     }
 }

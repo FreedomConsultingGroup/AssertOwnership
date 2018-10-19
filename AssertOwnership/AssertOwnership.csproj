@@ -92,12 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssertOwnership.key.snk" />
+    <Content Include="AssertOwnership.config" />
     <None Include="packages.config" />
-    <Content Include="config.xml" />
     <Content Include="Interactive\interactive.css" />
     <Content Include="Interactive\interactive.html" />
     <Content Include="Interactive\interactive.js" />
-    <Content Include="PKIAuthenticationModule.key.snk" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
