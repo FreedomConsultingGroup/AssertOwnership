@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<Root>
+  <Folder name="ownership">
+    <Folder name="Bin">
+      <File>
+        <Name>AssertOwnership.dll</Name>
+      </File>
+      <File>
+        <Name>log4net.dll</Name>
+      </File>
+      <File>
+        <Name>Newtonsoft.Json.dll</Name>
+      </File>
+    </Folder>
+    <Folder name="static">
+      <File>
+        <Name>interactive.html</Name>
+      </File>
+      <Folder name="css">
+        <File>
+          <Name>interactive.css</Name>
+        </File>
+      </Folder>
+      <Folder name="error">
+        <File>
+          <Name>400.html</Name>
+        </File>
+        <File>
+          <Name>403.html</Name>
+        </File>
+        <File>
+          <Name>404.html</Name>
+        </File>
+        <File>
+          <Name>405.html</Name>
+        </File>
+        <File>
+          <Name>500.html</Name>
+        </File>
+      </Folder>
+      <Folder name="js">
+        <File>
+          <Name>interactive.js</Name>
+        </File>
+      </Folder>
+    </Folder>
+    <File>
+      <Name>log4net.config</Name>
+    </File>
+    <File>
+      <Name>web.config</Name>
+    </File>
+  </Folder>
+</Root>
