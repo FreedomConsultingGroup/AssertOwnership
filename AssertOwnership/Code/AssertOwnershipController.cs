@@ -38,9 +38,9 @@ namespace FCG.AssertOwnership
 
             // Check path for either rest or static, or 404 if neither matches
             AOController controller;
-            if (path[index].ToLower() == RestContentController.Path.ToLower())
+            if (path[index].ToLower() == APIContentController.Path.ToLower())
             {
-                controller = new RestContentController();
+                controller = new APIContentController();
                 controller.Defer(context, path, ++index);
                 return;
             }

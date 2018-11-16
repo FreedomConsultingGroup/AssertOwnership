@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class RequestGroupContentHandler : RestHttpHandler
+    public class RequestGroupContentHandler : APIHttpHandler
     {
         private OwnershipHelper helper;
 
@@ -34,7 +34,7 @@ namespace FCG.AssertOwnership
                 return;
             }
 
-            // GetGroupItems returns null if the user does not blong to any groups, and an empty JObject if no items have been shared to any of the user's groups
+            // GetGroupItems returns null if the user does not belong to any groups, and an empty JObject if no items have been shared to any of the user's groups
             JObject items = GetGroupItems(userInfo);
             if (items == null)
             {

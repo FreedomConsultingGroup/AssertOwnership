@@ -3,7 +3,7 @@ using System.Web;
 
 namespace FCG.AssertOwnership
 {
-    public class WhoAmIHandler : RestHttpHandler
+    public class WhoAmIHandler : APIHttpHandler
     {
         public WhoAmIHandler() : base("whoami") { }
 

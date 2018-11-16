@@ -5,7 +5,7 @@ using System.Web;
 
 namespace FCG.AssertOwnership
 {
-    public class RestContentController : AOController
+    public class APIContentController : AOController
     {
         public static string Path { get { return "rest"; } }
 
@@ -15,7 +15,7 @@ namespace FCG.AssertOwnership
                based on the path of the request*/
 
             // TODO Change this to Command pattern for sanity
-            foreach (RestHttpHandler handler in Global.RestHandlers)
+            foreach (APIHttpHandler handler in Global.RestHandlers)
             {
                 if (path[index].ToLower() == handler.Path.ToLower())
                 {

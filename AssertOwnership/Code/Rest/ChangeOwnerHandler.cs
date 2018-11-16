@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FCG.AssertOwnership
 {
-    public class ChangeOwnerHandler : RestHttpHandler
+    public class ChangeOwnerHandler : APIHttpHandler
     {
         private OwnershipHelper helper;
 

@@ -21,7 +21,7 @@ namespace FCG.AssertOwnership
         // Whitelist of groups to ignore when transfering ownership. Currently only contains the featured maps group
         public static readonly string[] GroupWhitelist = GetWhitelistedGroups();
 
-        public static readonly RestHttpHandler[] RestHandlers = GetImplementedRestClasses();
+        public static readonly APIHttpHandler[] RestHandlers = GetImplementedRestClasses();
 
         private static ILog Log = null;
         
@@ -35,21 +35,21 @@ namespace FCG.AssertOwnership
             Log.Info(message);
         }
 
-        // Returns an array with instances of all classes that are subclasses of RestHttpHandler
-        private static RestHttpHandler[] GetImplementedRestClasses()
+        // Returns an array with instances of all classes that are subclasses of APIHttpHandler
+        private static APIHttpHandler[] GetImplementedRestClasses()
         {
-            List<RestHttpHandler> handlers = new List<RestHttpHandler>();
+            List<APIHttpHandler> handlers = new List<APIHttpHandler>();
             // Get assemblies used in the current domain
             foreach (var domain in AppDomain.CurrentDomain.GetAssemblies())
             {
                 // Get all types in each assembly
                 foreach (Type t in domain.GetExportedTypes())
                 {
-                    // Check if it inherits from RestHttpHandler
-                    if (t.IsSubclassOf(typeof(RestHttpHandler)) && !t.IsAbstract)
+                    // Check if it inherits from APIHttpHandler
+                    if (t.IsSubclassOf(typeof(APIHttpHandler)) && !t.IsAbstract)
                     {
                         // Initialize the object and add it to the list
-                        handlers.Add((RestHttpHandler)Activator.CreateInstance(t));
+                        handlers.Add((APIHttpHandler)Activator.CreateInstance(t));
                     }
                 }
             }

@@ -2,11 +2,11 @@
 
 namespace FCG.AssertOwnership
 {
-    public abstract class RestHttpHandler
+    public abstract class APIHttpHandler
     {
         private string path;
 
-        public RestHttpHandler(string path)
+        public APIHttpHandler(string path)
         {
             this.path = path;
         }
