@@ -17,7 +17,7 @@ namespace FCG.AssertOwnership
         /* Set the base url for the portal and get path of certificate */
         private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT_PATH", EnvironmentVariableTarget.Machine);
         private HttpClient client;
-        private static OwnershipHelper instance = new OwnershipHelper();
+        private static OwnershipHelper instance;
 
         private OwnershipHelper()
         {
@@ -36,6 +36,10 @@ namespace FCG.AssertOwnership
 
         public static OwnershipHelper getInstance()
         {
+            if(instance == null)
+            {
+                instance = new OwnershipHelper();
+            }
             return instance;
         }
 

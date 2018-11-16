@@ -8,7 +8,7 @@ using log4net;
 
 namespace FCG.AssertOwnership
 {
-    public class Global
+    public static class Global
     {
         private static readonly XmlElement config = Configure();
 

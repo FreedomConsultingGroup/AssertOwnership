@@ -14,6 +14,7 @@ namespace FCG.AssertOwnership
             /* Called by AssertOwnershipController, points to the handlers for the rest API
                based on the path of the request*/
 
+            // TODO Change this to Command pattern for sanity
             foreach (RestHttpHandler handler in Global.RestHandlers)
             {
                 if (path[index].ToLower() == handler.Path.ToLower())
