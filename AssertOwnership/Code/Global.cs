@@ -17,11 +17,13 @@ namespace FCG.AssertOwnership
         public static readonly string BaseDirectory = RootDirectory + config.SelectNodes("BaseDirectory")[0].InnerText;
         public static readonly string StaticDirectory = BaseDirectory + config.SelectNodes("StaticDirectory")[0].InnerText;
         public static readonly string PortalUrl = config.SelectNodes("PortalUrl")[0].InnerText;
+        public static readonly string CertPath = config.SelectNodes("RequestCert")[0].InnerText;
+        public static readonly string CertPasswdPath = config.SelectNodes("RequestCertPasswd")[0].InnerText;
 
         // Whitelist of groups to ignore when transfering ownership. Currently only contains the featured maps group
         public static readonly string[] GroupWhitelist = GetWhitelistedGroups();
 
-        public static readonly APIHttpHandler[] RestHandlers = GetImplementedRestClasses();
+        public static readonly APIHttpHandler[] APIHandlers = GetImplementedAPIClasses();
 
         private static ILog Log = null;
         
@@ -35,8 +37,8 @@ namespace FCG.AssertOwnership
             Log.Info(message);
         }
 
-        // Returns an array with instances of all classes that are subclasses of APIHttpHandler
-        private static APIHttpHandler[] GetImplementedRestClasses()
+        // Returns an array with instances of all classes that are subclasses of APIHttpHandler. Same instance can be used for multiple requests because API is RESTful
+        private static APIHttpHandler[] GetImplementedAPIClasses()
         {
             List<APIHttpHandler> handlers = new List<APIHttpHandler>();
             // Get assemblies used in the current domain
@@ -59,6 +61,7 @@ namespace FCG.AssertOwnership
         private static XmlElement Configure()
         {
             XmlDocument doc = new XmlDocument();
+            // Environment variable set by Install.exe OR manually by the user
             doc.Load(Environment.GetEnvironmentVariable("ASSERT_OWNERSHIP_CONFIG"));
             return doc.DocumentElement;
         }

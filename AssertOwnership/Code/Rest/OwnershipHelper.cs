@@ -15,14 +15,13 @@ namespace FCG.AssertOwnership
         /* Contains helper functions that prevent writing the same code over and over. */
 
         /* Set the base url for the portal and get path of certificate */
-        private readonly string certPath = Environment.GetEnvironmentVariable("ADMIN_CERT_PATH", EnvironmentVariableTarget.Machine);
         private HttpClient client;
         private static OwnershipHelper instance;
 
         private OwnershipHelper()
         {
-            byte[] certFileBinary = File.ReadAllBytes(certPath + "cgoodTEMP.pfx");
-            string passwd = File.ReadAllText(certPath + "passwd.txt");
+            byte[] certFileBinary = File.ReadAllBytes(Global.CertPath);
+            string passwd = File.ReadAllText(Global.CertPasswdPath);
 
             X509Certificate2 cert = new X509Certificate2();
             cert.Import(certFileBinary, passwd, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
