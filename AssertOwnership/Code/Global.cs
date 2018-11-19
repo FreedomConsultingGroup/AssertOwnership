@@ -14,7 +14,7 @@ namespace FCG.AssertOwnership
 
         // Global variables used by different files, as well as things that may need to be changed by other users
         public static readonly string RootDirectory = config.SelectNodes("RootDirectory")[0].InnerText;
-        public static readonly string BaseDirectory = RootDirectory + config.SelectNodes("BaseDirectory")[0].InnerText;
+        public static readonly string BaseDirectory = config.SelectNodes("BaseDirectory")[0].InnerText;
         public static readonly string StaticDirectory = BaseDirectory + config.SelectNodes("StaticDirectory")[0].InnerText;
         public static readonly string PortalUrl = config.SelectNodes("PortalUrl")[0].InnerText;
         public static readonly string CertPath = config.SelectNodes("RequestCert")[0].InnerText;
