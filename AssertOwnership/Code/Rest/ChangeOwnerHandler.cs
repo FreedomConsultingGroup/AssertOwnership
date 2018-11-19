@@ -43,7 +43,7 @@ namespace FCG.AssertOwnership
             }
 
             // Get item ID, the new owner of the item, and the destination folder from the request parameters
-            string itemID = request["id"];
+            string itemID = request["id"];  
             string newOwner = request["newowner"];
             string newFolder = request["newfolder"];
 

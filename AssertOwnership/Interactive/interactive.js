@@ -2,24 +2,20 @@
 
 var user = "";
 var thumbnail = "";
-$.ajax({
-    dataType: "json",
-    url: portalUrl + "ownership/rest/whoami",
-    success: function (data) {
-        user = data["name"];
-        $("#username")[0].innerHTML = user;
+ajax(portalUrl + "ownership/rest/whoami", "GET", null, function (data) {
+    user = data["name"];
+    document.getElementById("username").innerHTML = user;
 
-        let thumbnail = $("#avatar")[0];
-        if (data["thumbnail"] === null) {
-            thumbnail.src = "https://fcg-arcgis-srv.freedom.local/portal/home/10.6/js/arcgisonline/css/images/no-user-thumb.jpg";
-        } else {
-            thumbnail.src = "https://fcg-arcgis-srv.freedom.local/portal/sharing/rest/community/users/" + user + "/info/" + data["thumbnail"];
-        }
+    let thumbnail = document.getElementById("avatar");
+    if (data["thumbnail"] === null) {
+        thumbnail.src = portalUrl + "/home/10.6/js/arcgisonline/css/images/no-user-thumb.jpg";
+    } else {
+        thumbnail.src = portalUrl + "/sharing/rest/community/users/" + user + "/info/" + data["thumbnail"];
     }
 });
 
 function successFunction(data) {
-    let table = $("#group-items-table")[0];
+    let table = document.getElementById("group-items-table");
     for (var id in data) {
         if (data.hasOwnProperty(id)) {
             let row = table.insertRow(-1);
@@ -74,29 +70,44 @@ function successFunction(data) {
 
 function generateOnClickFunction(id) {
     return function (evt) {
-        $.ajax({
-            method: "POST",
-            dataType: "json",
-            url: portalUrl + "ownership/rest/chown",
-            data: {
-                "id": id
-            },
-            success: function (data) {
-                if (data["success"] === true) {
-                    alert("Item successfully transfered");
-                } else {
-                    alert("Something went wrong: \n" + data["error"]["message"]);
-                }
+        ajax(portalUrl + "ownership/rest/chown", "POST", { "id": id }, function (data) {
+            if (data["success"] === true) {
+                alert("Item successfully transfered");
+            } else {
+                alert("Something went wrong: \n" + data["error"]["message"]);
             }
         });
     };
 }
 
 function main() {
-    $.ajax({
-        url: portalUrl + "ownership/rest/group",
-        dataType: "json",
-        success: successFunction
-    });
+    ajax(portalUrl + "ownership/rest/group", "GET", null, successFunction);
+}
+
+function ajax(url, method, data, success) {
+    var reqObj = new XMLHttpRequest();
+    reqObj.responseType = "json";
+    reqObj.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            success(this.response);
+        }
+    };
+    if (method === "POST") {
+        reqObj.open(method, url);
+        reqObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        reqObj.send(data);
+    } else if (method === "GET") {
+        if (data !== null) {
+            let reqData = [];
+            for (let key in data) {
+                reqData.push(encodeURIComponent(key) + "=" + encodeURIComponent(data[key]));
+            }
+            reqObj.open(method, url + "?" + reqData.join("&"));
+            reqObj.send();
+        } else {
+            reqObj.open(method, url);
+            reqObj.send();
+        }
+    }
 }
 main();
